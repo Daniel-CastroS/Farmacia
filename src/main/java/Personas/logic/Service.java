@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import Personas.data.Data;
+import Personas.data.XmlPersister;
 
 public class Service {
     private static Service theInstance;
@@ -18,7 +19,15 @@ public class Service {
     public Data getData() {return data;}
 
 
-    private Service() { data = new Data(); }
+    private Service() {
+        try{
+            data= XmlPersister.instance().load();
+        }
+        catch(Exception e) {
+
+            data = new Data();
+        }
+    }
 
     // =============== Medico ===============
     public void createMedico(Medico m) throws Exception {
@@ -242,18 +251,43 @@ public class Service {
                 .filter(i -> i.getId().equals(p.getId()))
                 .findFirst()
                 .orElse(null);
+
         Medico result2 = data.getMedicos().stream()
                 .filter(i -> i.getId().equals(p.getId()))
                 .findFirst()
                 .orElse(null);
+
         if (result1 != null) {
             return result1;
         } else if (result2 != null) {
             return result2;
         } else {
-            throw new Exception("Farmaceuta no existe");
+            throw new Exception("Trabajador no existe");
         }
     }
+
+    // =================== Recetas ===================
+
+    // Crear receta (confeccionarla)
+    public void createReceta(Receta r) {
+        data.getRecetas().add(r);
+    }
+
+    // Listar todas las recetas
+    public List<Receta> findAllRecetas() {
+        return data.getRecetas();
+    }
+
+    // Buscar recetas por paciente
+    public List<Receta> searchRecetaPorPaciente(Paciente p) {
+        return data.getRecetas().stream()
+                .filter(r -> r.getPaciente().getId().equals(p.getId()))
+                .collect(Collectors.toList());
+    }
+
+
+
+
 
 }
 

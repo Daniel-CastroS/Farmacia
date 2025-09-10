@@ -1,5 +1,6 @@
 package Personas.presentation.Medicamentos;
 
+import Personas.data.XmlPersister;
 import Personas.logic.Medicamento;
 import Personas.logic.Service;
 import Personas.Application;
@@ -37,6 +38,8 @@ public class Controller {
                 Service.instance().updateMedicamento(m);
                 break;
         }
+        XmlPersister.instance().store(Service.instance().getData());
+
         model.setFilter(new Medicamento());
         search(model.getFilter());
     }

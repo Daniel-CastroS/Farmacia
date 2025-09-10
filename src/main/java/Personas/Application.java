@@ -64,10 +64,17 @@ public class Application {
         Personas.presentation.Medicamentos.Model medicamentosModel = new Personas.presentation.Medicamentos.Model();
         Personas.presentation.Medicamentos.Controller medicamentosController = new Personas.presentation.Medicamentos.Controller(medicamentosView,medicamentosModel);
 
+/// ///////////
+        Personas.presentation.prescripcion.View prescripcionView = new Personas.presentation.prescripcion.View();
+        Personas.presentation.prescripcion.Model prescripcionModel = new Personas.presentation.prescripcion.Model();
+        Personas.presentation.prescripcion.Controller prescripcionController = new Personas.presentation.prescripcion.Controller(prescripcionView, prescripcionModel);
 
+        //
         JFrame windowPaciente = new JFrame("Gestión de Pacientes");
         windowPaciente.setSize(800, 600);
         windowPaciente.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+
 
         // ---PESTANAS
         JTabbedPane tabs = new JTabbedPane();
@@ -75,7 +82,7 @@ public class Application {
         tabs.addTab("Farmaceutas", farmView.getPanel());
         tabs.addTab("Pacientes", pacienteView.getPanel());
         tabs.addTab("Medicamentos", medicamentosView.getPanel());
-
+        tabs.addTab("Prescribir", prescripcionView.getPanel());
         window.setContentPane(tabs);
         window.setVisible(true);
     }

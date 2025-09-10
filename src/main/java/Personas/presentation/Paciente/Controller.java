@@ -1,6 +1,7 @@
 package Personas.presentation.Paciente;
 
 import Personas.Application;
+import Personas.data.XmlPersister;
 import Personas.logic.Paciente;
 import Personas.logic.Service;
 
@@ -40,6 +41,7 @@ public class Controller {
                 Service.instance().updatePaciente(m);
                 break;
         }
+        XmlPersister.instance().store(Service.instance().getData());
 
         model.setFilter(new Paciente());
         search(model.getFilter());
