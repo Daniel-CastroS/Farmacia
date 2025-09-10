@@ -4,14 +4,12 @@ import Personas.logic.Medicamento;
 import Personas.logic.Receta;
 
 import javax.swing.*;
-import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import Personas.logic.MedicamentoRecetado;
-import Personas.logic.Receta;
 
 
 public class View implements PropertyChangeListener {
@@ -24,6 +22,7 @@ public class View implements PropertyChangeListener {
     private JTable tableMedicamentos;    // tabla de medicamentos
 
     private JTextField textFieldFecha;
+    private JButton limpiarButton;
 
     private Controller controller;
     private Model model;
