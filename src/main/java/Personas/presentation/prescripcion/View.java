@@ -69,7 +69,7 @@ public class View implements PropertyChangeListener {
                     return;
                 }
 
-                // Setear fecha de retiro 3 días después de hoy y cambiar estado
+
                 r.setFechaRetiro(java.time.LocalDate.now().plusDays(3));
                 r.setEstado("Confeccionada");
 
@@ -99,12 +99,6 @@ public class View implements PropertyChangeListener {
         });
 
 
-
-
-
-
-
-
         tableRecetas.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 int row = tableRecetas.getSelectedRow();
@@ -114,18 +108,6 @@ public class View implements PropertyChangeListener {
                 }
             }
         });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -191,50 +173,5 @@ public class View implements PropertyChangeListener {
             model.setCurrent(r);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
