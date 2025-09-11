@@ -1,6 +1,7 @@
 package Personas;
 
-import Personas.logic.Persona;
+import Personas.logic.Medico;
+import Personas.logic.Farmaceuta;
 import Personas.presentation.Medico.Controller;
 import Personas.presentation.Medico.Model;
 import Personas.presentation.Medico.View;
@@ -38,51 +39,69 @@ public class Application {
     }
 
     private static void doRun(){
-        //ESTO ES DE MEDICO
-        View medicoView = new View();
-        Model medicoModel = new Model();
-        Controller medicoController = new Controller(medicoView, medicoModel);
-
-        //ESTO ES DE FARMACEUTA, sin embargo no puedo hacer la implementacion tan directa porque por algun no motivo no me deja hacer el puto import de Farmaceutas
-        Personas.presentation.Farmaceuta.View farmView = new Personas.presentation.Farmaceuta.View();
-        Personas.presentation.Farmaceuta.Model farmModel = new Personas.presentation.Farmaceuta.Model();
-        Personas.presentation.Farmaceuta.Controller farmController = new Personas.presentation.Farmaceuta.Controller(farmView, farmModel);
-
-
-        JFrame window = new JFrame("Gestión de Personal");
+        JFrame window = new JFrame();
         window.setSize(800, 600);
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        //ESTO ES DE PACIENTE
-        Personas.presentation.Paciente.View pacienteView = new Personas.presentation.Paciente.View();
-        Personas.presentation.Paciente.Model pacienteModel = new Personas.presentation.Paciente.Model();
-        Personas.presentation.Paciente.Controller pacienteController = new Personas.presentation.Paciente.Controller(pacienteView, pacienteModel);
-
-
-        //
-        Personas.presentation.Medicamentos.View medicamentosView = new Personas.presentation.Medicamentos.View();
-        Personas.presentation.Medicamentos.Model medicamentosModel = new Personas.presentation.Medicamentos.Model();
-        Personas.presentation.Medicamentos.Controller medicamentosController = new Personas.presentation.Medicamentos.Controller(medicamentosView,medicamentosModel);
-
-/// ///////////
-        Personas.presentation.prescripcion.View prescripcionView = new Personas.presentation.prescripcion.View();
-        Personas.presentation.prescripcion.Model prescripcionModel = new Personas.presentation.prescripcion.Model();
-        Personas.presentation.prescripcion.Controller prescripcionController = new Personas.presentation.prescripcion.Controller(prescripcionView, prescripcionModel);
-
-        //
-        JFrame windowPaciente = new JFrame("Gestión de Pacientes");
-        windowPaciente.setSize(800, 600);
-        windowPaciente.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-
-
-        // ---PESTANAS
+        // ---PESTAÑAS
         JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Médicos", medicoView.getPanel());
-        tabs.addTab("Farmaceutas", farmView.getPanel());
-        tabs.addTab("Pacientes", pacienteView.getPanel());
-        tabs.addTab("Medicamentos", medicamentosView.getPanel());
-        tabs.addTab("Prescribir", prescripcionView.getPanel());
+
+
+        if (Sesion.getUserLogged().getRol().equals("Admin")) {
+            window.setTitle("Gestion");
+
+            //TODO ESTO ES PARA ADMINISTRADOR
+            JFrame windowPaciente = new JFrame("Gestión de Pacientes");
+            windowPaciente.setSize(800, 600);
+            windowPaciente.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+            //ESTO ES DE MEDICO
+            View medicoView = new View();
+            Model medicoModel = new Model();
+            Controller medicoController = new Controller(medicoView, medicoModel);
+
+            //ESTO ES DE FARMACEUTA, sin embargo no puedo hacer la implementacion tan directa porque por algun no motivo no me deja hacer el puto import de Farmaceutas
+            Personas.presentation.Farmaceuta.View farmView = new Personas.presentation.Farmaceuta.View();
+            Personas.presentation.Farmaceuta.Model farmModel = new Personas.presentation.Farmaceuta.Model();
+            Personas.presentation.Farmaceuta.Controller farmController = new Personas.presentation.Farmaceuta.Controller(farmView, farmModel);
+
+
+            //ESTO ES DE PACIENTE
+            Personas.presentation.Paciente.View pacienteView = new Personas.presentation.Paciente.View();
+            Personas.presentation.Paciente.Model pacienteModel = new Personas.presentation.Paciente.Model();
+            Personas.presentation.Paciente.Controller pacienteController = new Personas.presentation.Paciente.Controller(pacienteView, pacienteModel);
+
+
+            //ESTO ES DE MEDICAMENTOS
+            Personas.presentation.Medicamentos.View medicamentosView = new Personas.presentation.Medicamentos.View();
+            Personas.presentation.Medicamentos.Model medicamentosModel = new Personas.presentation.Medicamentos.Model();
+            Personas.presentation.Medicamentos.Controller medicamentosController = new Personas.presentation.Medicamentos.Controller(medicamentosView,medicamentosModel);
+
+            // PESTAÑAS
+            tabs.addTab("Médicos", medicoView.getPanel());
+            tabs.addTab("Farmaceutas", farmView.getPanel());
+            tabs.addTab("Pacientes", pacienteView.getPanel());
+            tabs.addTab("Medicamentos", medicamentosView.getPanel());
+        } else if(Sesion.getUserLogged() instanceof Medico){
+            window.setTitle("Prescripciones");
+
+            //ESTO ES DE PRESCRIPCION
+            Personas.presentation.prescripcion.View prescripcionView = new Personas.presentation.prescripcion.View();
+            Personas.presentation.prescripcion.Model prescripcionModel = new Personas.presentation.prescripcion.Model();
+            Personas.presentation.prescripcion.Controller prescripcionController = new Personas.presentation.prescripcion.Controller(prescripcionView, prescripcionModel);
+
+            // PESTAÑAS
+            tabs.addTab("Prescribir", prescripcionView.getPanel());
+        } else if(Sesion.getUserLogged() instanceof Farmaceuta){
+            //ESTO ES DESPACHO
+            Personas.presentation.Despacho.View despachoView = new Personas.presentation.Despacho.View();
+            Personas.presentation.Despacho.Model despachoModel = new Personas.presentation.Despacho.Model();
+            Personas.presentation.Despacho.Controller despachoController = new Personas.presentation.Despacho.Controller(despachoView, despachoModel);
+
+            // PESTAÑAS
+            tabs.addTab("Despacho", despachoView.getPanel());
+        }
+
         window.setContentPane(tabs);
         window.setVisible(true);
     }

@@ -26,7 +26,7 @@ public class View extends JDialog implements PropertyChangeListener {
     public View() {
         setContentPane(contentPane);
         setModal(true);
-        getRootPane().setDefaultButton(xButton);
+        getRootPane().setDefaultButton(loginButton);
 
         xButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -78,7 +78,9 @@ public class View extends JDialog implements PropertyChangeListener {
         Trabajador trabajador = new Trabajador();
         trabajador.setId(textFieldId.getText());
         try{
-            if(Service.instance().read(trabajador) != null){
+            if(Service.instance().read(trabajador) == null){
+                JOptionPane.showMessageDialog(this, "Usuario no existe");
+            } else {
                 trabajador = Service.instance().read(trabajador);
                 if(trabajador.getClave_sistema().equals(textFieldClave.getText())){
                     controller.login(trabajador);
@@ -86,8 +88,6 @@ public class View extends JDialog implements PropertyChangeListener {
                 } else {
                     JOptionPane.showMessageDialog(this, "Clave incorrecta");
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "Usuario no existe");
             }
         } catch(Exception e){
             JOptionPane.showMessageDialog(this, "Usuario no existe");
@@ -104,8 +104,7 @@ public class View extends JDialog implements PropertyChangeListener {
     }
 
     private void onExtra() {
-        // add your code here if necessary
-        JOptionPane.showMessageDialog(this, "Usuario por defecto:\nID: 1\nClave: 1");
+        // Acción para cambiar la contraseña, si la contraseña es igual al ID se procede al cambio de una, sino se pide la clave actual
     }
 
     public static void main(String[] args) {

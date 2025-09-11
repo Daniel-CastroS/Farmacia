@@ -47,17 +47,17 @@ public class Service {
         }
     }
 
-   /* public void deleteMedico(String id) throws Exception {
-        Medico result = data.getMedicos().stream()
-                .filter(i -> i.getId().equals(id))
-                .findFirst()
-                .orElse(null);
-        if (result != null) {
-            data.getMedicos().remove(result);
-        } else {
-            throw new Exception("Medico no existe");
-        }
-    }*/
+    /* public void deleteMedico(String id) throws Exception {
+         Medico result = data.getMedicos().stream()
+                 .filter(i -> i.getId().equals(id))
+                 .findFirst()
+                 .orElse(null);
+         if (result != null) {
+             data.getMedicos().remove(result);
+         } else {
+             throw new Exception("Medico no existe");
+         }
+     }*/
     public void updateMedico(Medico m) throws Exception {
         Medico result;
         try{
@@ -285,12 +285,45 @@ public class Service {
                 .collect(Collectors.toList());
     }
 
+    public List<Receta> search(Receta r) {
+        return data.getRecetas().stream()
+                .filter(r1 -> r1.getPaciente() != null && r.getPaciente() != null &&
+                        r1.getPaciente().getId().equals(r.getPaciente().getId()))
+                .collect(Collectors.toList());
+    }
 
+    public Receta readReceta(Receta m) throws Exception {
+        Receta result = data.getRecetas().stream()
+                .filter(i -> i.getPaciente().getId().equals(m.getPaciente().getId()))
+                .findFirst()
+                .orElse(null);
+        if (result != null) {
+            return result;
+        } else {
+            throw new Exception("Receta no existe");
+        }
+    }
 
+    public void updateReceta(Receta m) throws Exception {
+        Receta result;
+        try {
+            result = this.readReceta(m);
+            data.getRecetas().remove(result);
+            data.getRecetas().add(m);
+        } catch (Exception e) {
+            throw new Exception("Receta no existe");
+        }
+    }
 
-
+    public void deleteReceta(Receta p) throws Exception {
+        Receta result = data.getRecetas().stream()
+                .filter(i -> i.getPaciente().getId().equals(p.getPaciente().getId()))
+                .findFirst()
+                .orElse(null);
+        if (result != null) {
+            data.getRecetas().remove(result);
+        } else {
+            throw new Exception("Receta no existe");
+        }
+    }
 }
-
-
-
-
