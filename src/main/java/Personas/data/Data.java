@@ -40,13 +40,6 @@ public class Data {
 
 
         medicos.add(new Medico("1", "Juan", "Admin", "Cardiologia"));
-        medicos.add(new Medico("2", "Juan", "Trabajador", "Odontologia"));
-
-        farmaceutas.add(new Farmaceuta("3", "Ana", "Trabajador"));
-        farmaceutas.add(new Farmaceuta("4", "Carlos", "Trabajador"));
-        farmaceutas.add(new Farmaceuta("5", "Maria", "Trabajador"));
-
-
     }
 
     public List<Receta> getRecetas() {

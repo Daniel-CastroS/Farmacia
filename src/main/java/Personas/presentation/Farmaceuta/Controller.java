@@ -1,5 +1,6 @@
 package Personas.presentation.Farmaceuta;
 
+import Personas.data.XmlPersister;
 import Personas.logic.Farmaceuta;
 import Personas.logic.Service;
 import Personas.Application;
@@ -37,6 +38,7 @@ public class Controller {
                 Service.instance().updateFarmaceuta(f);
                 break;
         }
+        XmlPersister.instance().store(Service.instance().getData());
 
         model.setFilter(new Farmaceuta());
         search(model.getFilter());
