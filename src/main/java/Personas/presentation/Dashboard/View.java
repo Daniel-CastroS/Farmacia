@@ -13,25 +13,24 @@ import java.util.Map;
 public class View extends JPanel {
     private Model model;
 
-    private ChartPanel chartLinePanel;
-    private ChartPanel chartPiePanel;
+    private JPanel lineChartPanel;
+    private JPanel pieChartPanel;
 
     public View(Model model) {
         this.model = model;
-        this.setLayout(new GridLayout(1, 2)); // dos gráficos lado a lado
-        initComponents();
-    }
 
-    private void initComponents() {
-        chartLinePanel = new ChartPanel(null);
-        chartPiePanel = new ChartPanel(null);
+        setLayout(new GridLayout(1, 2)); // dos gráficos lado a lado
 
-        this.add(chartLinePanel);
-        this.add(chartPiePanel);
+        lineChartPanel = new JPanel(new BorderLayout());
+        add(lineChartPanel);
+
+        pieChartPanel = new JPanel(new BorderLayout());
+        add(pieChartPanel);
     }
 
     public void updateLineChart(Map<String, Integer> datos) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
         for (Map.Entry<String, Integer> entry : datos.entrySet()) {
             dataset.addValue(entry.getValue(), "Medicamentos", entry.getKey());
         }
@@ -42,20 +41,29 @@ public class View extends JPanel {
                 "Cantidad",
                 dataset
         );
-        chartLinePanel.setChart(chart);
+
+        lineChartPanel.removeAll();
+        lineChartPanel.add(new ChartPanel(chart), BorderLayout.CENTER);
+        lineChartPanel.revalidate();
+        lineChartPanel.repaint();
     }
 
-    public void updatePieChart(Map<String, Integer> datos) {
+    public void updatePieChart(Map<String, Long> datos) {
         DefaultPieDataset dataset = new DefaultPieDataset();
-        for (Map.Entry<String, Integer> entry : datos.entrySet()) {
+
+        for (Map.Entry<String, Long> entry : datos.entrySet()) {
             dataset.setValue(entry.getKey(), entry.getValue());
         }
 
         JFreeChart chart = ChartFactory.createPieChart(
                 "Recetas",
-                dataset
+                dataset,
+                true, true, false
         );
-        chartPiePanel.setChart(chart);
+
+        pieChartPanel.removeAll();
+        pieChartPanel.add(new ChartPanel(chart), BorderLayout.CENTER);
+        pieChartPanel.revalidate();
+        pieChartPanel.repaint();
     }
 }
-

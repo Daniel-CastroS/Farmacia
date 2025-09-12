@@ -1,34 +1,73 @@
 package Personas.presentation.Dashboard;
 
+import Personas.logic.Receta;
 import Personas.presentation.AbstractModel;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Model extends AbstractModel {
-    // Datos de ejemplo (Medicamentos por mes, Recetas por estado)
-    private Map<String, Integer> medicamentosPorMes;
-    private Map<String, Integer> recetasPorEstado;
+
+    private List<Receta> recetas;
+
+    public static final String RECETAS = "recetas";
 
     public Model() {
-        medicamentosPorMes = new HashMap<>();
-        recetasPorEstado = new HashMap<>();
+        this.recetas = new ArrayList<>();
     }
 
-    public Map<String, Integer> getMedicamentosPorMes() {
-        return medicamentosPorMes;
+    public Model(List<Receta> recetas) {
+        this.recetas = recetas;
     }
 
-    public Map<String, Integer> getRecetasPorEstado() {
-        return recetasPorEstado;
+    public List<Receta> getRecetas() {
+        return recetas;
     }
 
-    public void setMedicamentosPorMes(Map<String, Integer> datos) {
-        this.medicamentosPorMes = datos;
-        firePropertyChange("medicamentosPorMes");
+    public void setRecetas(List<Receta> recetas) {
+        this.recetas = recetas;
+        firePropertyChange(RECETAS);
     }
 
-    public void setRecetasPorEstado(Map<String, Integer> datos) {
-        this.recetasPorEstado = datos;
-        firePropertyChange("recetasPorEstado");
+    // --- Estadísticas ---
+
+    // 1. Cantidad de medicamentos prescritos por mes (String fechas "yyyy-MM-dd")
+    public Map<String, Integer> getMedicamentosPorMes(String inicio, String fin) {
+        Map<String, Integer> conteo = new TreeMap<>();
+
+        try {
+            // convertimos a enteros comparables YYYYMM
+            int inicioInt = Integer.parseInt(inicio.replace("-", "").substring(0, 6));
+            int finInt = Integer.parseInt(fin.replace("-", "").substring(0, 6));
+
+            for (Receta r : recetas) {
+                try {
+                    if (r.getFechaConfeccion() == null) continue;
+                    String fecha = r.getFechaConfeccion(); // formato "yyyy-MM-dd"
+                    String ym = fecha.substring(0, 7);     // "yyyy-MM"
+                    int ymInt = Integer.parseInt(fecha.replace("-", "").substring(0, 6));
+
+                    if (ymInt >= inicioInt && ymInt <= finInt) {
+                        int cantidad = (r.getMedicamentos() != null) ? r.getMedicamentos().size() : 0;
+                        conteo.put(ym, conteo.getOrDefault(ym, 0) + cantidad);
+                    }
+                } catch (Exception e) {
+                    // ignorar recetas mal formateadas
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error en rango de fechas: " + e.getMessage());
+        }
+
+        return conteo;
+    }
+
+    // 2. Cantidad de recetas por estado
+    public Map<String, Long> getRecetasPorEstado() {
+        return recetas.stream()
+                .collect(Collectors.groupingBy(
+                        Receta::getEstado,
+                        Collectors.counting()
+                ));
     }
 }
