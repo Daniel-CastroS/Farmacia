@@ -71,17 +71,22 @@ public class Application {
             Personas.presentation.Paciente.Model pacienteModel = new Personas.presentation.Paciente.Model();
             Personas.presentation.Paciente.Controller pacienteController = new Personas.presentation.Paciente.Controller(pacienteView, pacienteModel);
 
-
             //ESTO ES DE MEDICAMENTOS
             Personas.presentation.Medicamentos.View medicamentosView = new Personas.presentation.Medicamentos.View();
             Personas.presentation.Medicamentos.Model medicamentosModel = new Personas.presentation.Medicamentos.Model();
             Personas.presentation.Medicamentos.Controller medicamentosController = new Personas.presentation.Medicamentos.Controller(medicamentosView,medicamentosModel);
+
+            //ESTO ES DE DASHBOARD
+            Personas.presentation.Dashboard.Model dashboardModel = new Personas.presentation.Dashboard.Model();
+            Personas.presentation.Dashboard.View dashboardView = new Personas.presentation.Dashboard.View(dashboardModel);
+            Personas.presentation.Dashboard.Controller dashboardController = new Personas.presentation.Dashboard.Controller(dashboardModel,dashboardView);
 
             // PESTAÑAS
             tabs.addTab("Médicos", medicoView.getPanel());
             tabs.addTab("Farmaceutas", farmView.getPanel());
             tabs.addTab("Pacientes", pacienteView.getPanel());
             tabs.addTab("Medicamentos", medicamentosView.getPanel());
+            tabs.addTab("Dashboard", dashboardView);
         } else if(Sesion.getUserLogged() instanceof Medico){
             window.setTitle("Prescripciones");
 
