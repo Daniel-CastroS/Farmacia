@@ -37,6 +37,7 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <icon value="search.png"/>
               <text value="Buscar"/>
             </properties>
           </component>
@@ -45,6 +46,7 @@
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <icon value="pdf.png"/>
               <text value="Reporte"/>
             </properties>
           </component>
@@ -107,6 +109,7 @@
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <icon value="save.png"/>
               <text value="Guardar"/>
             </properties>
           </component>
@@ -115,6 +118,7 @@
               <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <icon value="bin.png"/>
               <text value="Borrar"/>
             </properties>
           </component>
@@ -123,6 +127,7 @@
               <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <icon value="clean.png"/>
               <text value="Limpiar"/>
             </properties>
           </component>

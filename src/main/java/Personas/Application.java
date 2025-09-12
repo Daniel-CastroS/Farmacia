@@ -29,8 +29,9 @@ public class Application {
 
     private static void doLogin(){
         Personas.presentation.Sesion.View loginView = new Personas.presentation.Sesion.View();
-        //loginView.setIconImage((new ImageIcon(Application.class.getResource("/images/login.png"))).getImage());
+        loginView.setIconImage((new ImageIcon(Application.class.getResource("/forms.png")).getImage()));
         loginView.setTitle("Login");
+        loginView.setSize(600,600);
         loginView.pack();
         loginView.setLocationRelativeTo(null);
         Personas.presentation.Sesion.Model loginModel = new Personas.presentation.Sesion.Model();
@@ -40,7 +41,7 @@ public class Application {
 
     private static void doRun(){
         JFrame window = new JFrame();
-        window.setSize(800, 600);
+        window.setSize(1200, 800);
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // ---PESTAÑAS
@@ -49,11 +50,9 @@ public class Application {
 
         if (Sesion.getUserLogged().getRol().equals("Admin")) {
             window.setTitle("Gestion");
+            window.setIconImage((new ImageIcon(Application.class.getResource("/setting.png")).getImage()));
 
             //TODO ESTO ES PARA ADMINISTRADOR
-            JFrame windowPaciente = new JFrame("Gestión de Pacientes");
-            windowPaciente.setSize(800, 600);
-            windowPaciente.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
             //ESTO ES DE MEDICO
             View medicoView = new View();
@@ -76,19 +75,14 @@ public class Application {
             Personas.presentation.Medicamentos.Model medicamentosModel = new Personas.presentation.Medicamentos.Model();
             Personas.presentation.Medicamentos.Controller medicamentosController = new Personas.presentation.Medicamentos.Controller(medicamentosView,medicamentosModel);
 
-            //ESTO ES DE DASHBOARD
-            Personas.presentation.Dashboard.Model dashboardModel = new Personas.presentation.Dashboard.Model();
-            Personas.presentation.Dashboard.View dashboardView = new Personas.presentation.Dashboard.View(dashboardModel);
-            Personas.presentation.Dashboard.Controller dashboardController = new Personas.presentation.Dashboard.Controller(dashboardModel,dashboardView);
-
             // PESTAÑAS
-            tabs.addTab("Médicos", medicoView.getPanel());
-            tabs.addTab("Farmaceutas", farmView.getPanel());
-            tabs.addTab("Pacientes", pacienteView.getPanel());
-            tabs.addTab("Medicamentos", medicamentosView.getPanel());
-            tabs.addTab("Dashboard", dashboardView);
+            tabs.addTab("Médicos", new ImageIcon(Application.class.getResource("/doc.png")) ,medicoView.getPanel());
+            tabs.addTab("Farmaceutas", new ImageIcon(Application.class.getResource("/farma.png")) ,farmView.getPanel());
+            tabs.addTab("Pacientes", new ImageIcon(Application.class.getResource("/cough.png")) ,pacienteView.getPanel());
+            tabs.addTab("Medicamentos", new ImageIcon(Application.class.getResource("/meds.png")) ,medicamentosView.getPanel());
         } else if(Sesion.getUserLogged() instanceof Medico){
             window.setTitle("Prescripciones");
+            window.setIconImage((new ImageIcon(Application.class.getResource("/note.png")).getImage()));
 
             //ESTO ES DE PRESCRIPCION
             Personas.presentation.prescripcion.View prescripcionView = new Personas.presentation.prescripcion.View();
@@ -96,16 +90,28 @@ public class Application {
             Personas.presentation.prescripcion.Controller prescripcionController = new Personas.presentation.prescripcion.Controller(prescripcionView, prescripcionModel);
 
             // PESTAÑAS
-            tabs.addTab("Prescribir", prescripcionView.getPanel());
+            tabs.addTab("Prescribir", new ImageIcon(Application.class.getResource("/pills.png")), prescripcionView.getPanel());
         } else if(Sesion.getUserLogged() instanceof Farmaceuta){
+            window.setTitle("Despacho");
+            window.setIconImage((new ImageIcon(Application.class.getResource("/pack.png")).getImage()));
+
             //ESTO ES DESPACHO
             Personas.presentation.Despacho.View despachoView = new Personas.presentation.Despacho.View();
             Personas.presentation.Despacho.Model despachoModel = new Personas.presentation.Despacho.Model();
             Personas.presentation.Despacho.Controller despachoController = new Personas.presentation.Despacho.Controller(despachoView, despachoModel);
 
             // PESTAÑAS
-            tabs.addTab("Despacho", despachoView.getPanel());
+            tabs.addTab("Despacho", new ImageIcon(Application.class.getResource("/send.png")), despachoView.getPanel());
         }
+
+        //ESTO ES DE DASHBOARD
+        Personas.presentation.Dashboard.Model dashboardModel = new Personas.presentation.Dashboard.Model();
+        Personas.presentation.Dashboard.View dashboardView = new Personas.presentation.Dashboard.View(dashboardModel);
+        Personas.presentation.Dashboard.Controller dashboardController = new Personas.presentation.Dashboard.Controller(dashboardModel,dashboardView);
+
+        // PESTAÑAS GLOBALES
+        tabs.addTab("Dashboard", new ImageIcon(Application.class.getResource("/stats.png")) ,dashboardView);
+        tabs.addTab("Acerca de...", new ImageIcon(Application.class.getResource("/pencil.png")), new JLabel(new ImageIcon(Application.class.getResource("/hospital.jpg"))), "View Image");
 
         window.setContentPane(tabs);
         window.setVisible(true);

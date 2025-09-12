@@ -21,7 +21,8 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Login"/>
+              <icon value="enter.png"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="cb0b7" class="javax.swing.JButton" binding="xButton">
@@ -29,7 +30,8 @@
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="X"/>
+              <icon value="close.png"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="b325e" class="javax.swing.JButton" binding="extraButton" default-binding="true">
@@ -37,7 +39,8 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Extra"/>
+              <icon value="password.png"/>
+              <text value=""/>
             </properties>
           </component>
         </children>
@@ -55,7 +58,8 @@
               <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Foto"/>
+              <icon value="user.png"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="13abe" class="javax.swing.JLabel" binding="id">
