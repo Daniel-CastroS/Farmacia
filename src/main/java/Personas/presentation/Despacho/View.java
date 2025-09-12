@@ -13,7 +13,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.time.LocalDate;
+import java.util.Objects;
 
 public class View implements PropertyChangeListener {
     private JTable tableRecetas;
@@ -21,6 +21,7 @@ public class View implements PropertyChangeListener {
     private JButton entregarButton;
     private JTextField textFieldID;
     private JPanel panel1;
+    private JButton resetButton;
 
     Controller controller;
     Model model;
@@ -30,6 +31,10 @@ public class View implements PropertyChangeListener {
         buscarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (!validateFields()) {
+                    JOptionPane.showMessageDialog(panel1, "Debe rellenar los campos obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 try {
                     Receta filter = new Receta();
                     Paciente aux = new Paciente();
@@ -39,6 +44,7 @@ public class View implements PropertyChangeListener {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Información", JOptionPane.INFORMATION_MESSAGE);
                 }
+                resetField(textFieldID);
             }
         });
 
@@ -50,6 +56,17 @@ public class View implements PropertyChangeListener {
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Información", JOptionPane.INFORMATION_MESSAGE);
                 }
+            }
+        });
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    controller.getAllRecetas(); // This loads all recetas
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Información", JOptionPane.INFORMATION_MESSAGE);
+                }
+                resetField(textFieldID);
             }
         });
         tableRecetas.addMouseListener(new MouseAdapter() {
@@ -82,7 +99,7 @@ public class View implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
             case Personas.presentation.Despacho.Model.LIST:
-                int[] cols = {TableModel.ID_PACIENTE, TableModel.FECHA_ENTREGA};
+                int[] cols = {TableModel.ID_PACIENTE, TableModel.NOMBRE_PACIENTE, TableModel.FECHA_ENTREGA, TableModel.ESTADO};
                 tableRecetas.setModel(new TableModel(cols, model.getList()));
                 tableRecetas.setRowHeight(30);
                 TableColumnModel columnModel = tableRecetas.getColumnModel();
@@ -113,20 +130,11 @@ public class View implements PropertyChangeListener {
         this.panel1.revalidate();
     }
 
-    private Receta take() {
-        Receta f = new Receta();
-        Paciente p = new Paciente();
-        p.setId(textFieldID.getText());
-        f.setPaciente(p);
-        return f;
-    }
-
-    private void entregarReceta(){
-        LocalDate fecha = LocalDate.now();
-        if(model.getCurrent() != null && !model.getCurrent().getEstado().equals("entregada")){
-            if (model.getCurrent().getFechaRetiro().equals(fecha)) {
-                model.getCurrent().setEstado("entregada");
-            }
+    private void entregarReceta() throws  Exception{
+        if (model.getCurrent() == null) return;
+        if (!Objects.equals(model.getCurrent().getEstado(), "Entregada")) {
+            model.getCurrent().setEstado("Entregada");
+            Service.instance().saveAllDataToXML();
         }
     }
 

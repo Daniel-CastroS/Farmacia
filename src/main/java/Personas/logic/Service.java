@@ -320,6 +320,14 @@ public class Service {
         }
     }
 
+    public void saveAllDataToXML() throws Exception {
+        try {
+            XmlPersister.instance().store(data);
+        } catch (Exception e) {
+            throw new Exception("Error saving data to XML: " + e.getMessage());
+        }
+    }
+
     public void deleteReceta(Receta p) throws Exception {
         Receta result = data.getRecetas().stream()
                 .filter(i -> i.getPaciente().getId().equals(p.getPaciente().getId()))

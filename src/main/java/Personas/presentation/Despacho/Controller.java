@@ -65,6 +65,11 @@ public class Controller {
         model.setCurrent(new Receta());
     }
 
+    public void getAllRecetas() {
+        List<Receta> recetas = Service.instance().findAllRecetas();
+        model.setList(recetas); // This should fire the LIST property change
+    }
+
     // Obtener listado completo
     public List<Receta> getAll() {
         return Service.instance().findAllRecetas();

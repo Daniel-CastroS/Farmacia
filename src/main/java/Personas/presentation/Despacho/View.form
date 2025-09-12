@@ -34,16 +34,25 @@
           </component>
           <component id="a76f7" class="javax.swing.JButton" binding="buscarButton" default-binding="true">
             <constraints>
-              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="search.png"/>
               <text value="Buscar"/>
             </properties>
           </component>
+          <component id="ac4c9" class="javax.swing.JButton" binding="resetButton" default-binding="true">
+            <constraints>
+              <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="reset.png"/>
+              <text value="Reset"/>
+            </properties>
+          </component>
           <component id="6983c" class="javax.swing.JButton" binding="entregarButton" default-binding="true">
             <constraints>
-              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <icon value="give.png"/>
