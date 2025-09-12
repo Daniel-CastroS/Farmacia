@@ -131,7 +131,6 @@ public class View implements PropertyChangeListener {
         this.model = model;
         model.addPropertyChangeListener(this);
     }
-
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals(Model.CURRENT)) {

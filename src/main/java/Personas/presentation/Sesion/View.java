@@ -104,13 +104,11 @@ public class View extends JDialog implements PropertyChangeListener {
     }
 
     private void onExtra() {
-        // Acción para cambiar la contraseña, si la contraseña es igual al ID se procede al cambio de una, sino se pide la clave actual
-    }
-
-    public static void main(String[] args) {
-        View dialog = new View();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
+        Personas.presentation.Sesion.Contra.View contraView = new Personas.presentation.Sesion.Contra.View();
+        contraView.setIconImage((new ImageIcon(Application.class.getResource("/forms.png")).getImage()));
+        contraView.setTitle("Cambiar Contraseña");
+        contraView.setSize(400,300);
+        contraView.pack();
+        contraView.setVisible(true);
     }
 }
