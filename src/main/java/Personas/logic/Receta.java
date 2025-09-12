@@ -1,13 +1,25 @@
 package Personas.logic;
 
+import Personas.data.LocalDateAdapter;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Receta {
     private Paciente paciente;
-    private LocalDate fechaConfeccion;
-    private LocalDate fechaRetiro;
+
+    //@XmlJavaTypeAdapter(LocalDateAdapter.class)
+    private String fechaConfeccion;
+
+   // @XmlJavaTypeAdapter(LocalDateAdapter.class)
+    private String fechaRetiro;
+
+    @XmlElementWrapper(name = "medicamentos")
+    @XmlElement(name = "medicamentoRecetado")
     private List<MedicamentoRecetado> medicamentos;
     private String estado; // "confeccionada", "proceso", "lista", "entregada"
 
@@ -16,7 +28,7 @@ public class Receta {
     }
     public Receta(Paciente paciente) {
         this.paciente = paciente;
-        this.fechaConfeccion = LocalDate.now();
+        //this.fechaConfeccion = 12;
         this.medicamentos = new ArrayList<>();
         this.estado = "confeccionada"; // por defecto al crear
     }
@@ -28,15 +40,15 @@ public class Receta {
         this.paciente = paciente;
     }
 
-    public LocalDate getFechaConfeccion() {
+    public String getFechaConfeccion() {
         return fechaConfeccion;
     }
 
-    public LocalDate getFechaRetiro() {
+    public String getFechaRetiro() {
         return fechaRetiro;
     }
 
-    public void setFechaRetiro(LocalDate fechaRetiro) {
+    public void setFechaRetiro(String fechaRetiro) {
         this.fechaRetiro = fechaRetiro;
     }
 

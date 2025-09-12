@@ -13,6 +13,7 @@ public class Controller {
         model.init(Service.instance().search(new Receta()));
         this.view = view;
         this.model = model;
+        model.init(Service.instance().findAllRecetas());
         view.setController(this);
         view.setModel(model);
     }

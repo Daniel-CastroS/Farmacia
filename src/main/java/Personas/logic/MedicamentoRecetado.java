@@ -1,10 +1,24 @@
 package Personas.logic;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+
 public class MedicamentoRecetado {
+    @XmlElement
     private Medicamento medicamento;
+    @XmlElement
     private int cantidad;
+    @XmlElement
     private String indicaciones;
+  @XmlElement
     private int duracionDias;
+
+    public MedicamentoRecetado(){
+
+    }
 
     public MedicamentoRecetado(Medicamento medicamento, int cantidad, String indicaciones, int duracionDias) {
         this.medicamento = medicamento;

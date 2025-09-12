@@ -271,7 +271,12 @@ public class Service {
     // Crear receta (confeccionarla)
     public void createReceta(Receta r) {
         data.getRecetas().add(r);
-    }
+        try {
+            XmlPersister.instance().store(data);
+        }
+        catch (Exception e) {}
+
+        }
 
     // Listar todas las recetas
     public List<Receta> findAllRecetas() {

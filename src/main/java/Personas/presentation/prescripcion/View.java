@@ -70,7 +70,8 @@ public class View implements PropertyChangeListener {
                 }
 
 
-                r.setFechaRetiro(java.time.LocalDate.now().plusDays(3));
+               // r.setFechaRetiro(java.time.LocalDate.now().plusDays(3));
+                r.setFechaRetiro("2025-12-31");
                 r.setEstado("Confeccionada");
 
                 // Guardar la receta
