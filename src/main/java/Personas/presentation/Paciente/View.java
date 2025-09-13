@@ -2,10 +2,12 @@ package Personas.presentation.Paciente;
 
 import Personas.Application;
 import Personas.logic.Paciente;
+import java.awt.BorderLayout;
 import Personas.presentation.Paciente.Controller;
 import Personas.presentation.Paciente.Model;
 import Personas.presentation.Paciente.TableModel;
 
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 import java.awt.event.ActionEvent;
@@ -108,6 +110,11 @@ public class View implements PropertyChangeListener {
 
             }
         });
+
+        table1.setModel(new TableModel(
+                new int[]{TableModel.ID, TableModel.NOMBRE, TableModel.TELEFONO, TableModel.FECHANACIMIENTO},
+                new ArrayList<>()
+        ));
 
 
     }

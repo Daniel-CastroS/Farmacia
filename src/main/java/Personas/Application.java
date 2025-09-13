@@ -75,11 +75,18 @@ public class Application {
             Personas.presentation.Medicamentos.Model medicamentosModel = new Personas.presentation.Medicamentos.Model();
             Personas.presentation.Medicamentos.Controller medicamentosController = new Personas.presentation.Medicamentos.Controller(medicamentosView,medicamentosModel);
 
+            //Esto ES MANEJO DE RECETAS
+            Personas.presentation.ManejoRecetas.View manejoRecetasView = new Personas.presentation.ManejoRecetas.View();
+            Personas.presentation.ManejoRecetas.Model manejoRecetasModel = new Personas.presentation.ManejoRecetas.Model();
+            Personas.presentation.ManejoRecetas.Controller manejoRecetasController = new Personas.presentation.ManejoRecetas.Controller(manejoRecetasView, manejoRecetasModel);
+
             // PESTAÑAS
             tabs.addTab("Médicos", new ImageIcon(Application.class.getResource("/doc.png")) ,medicoView.getPanel());
             tabs.addTab("Farmaceutas", new ImageIcon(Application.class.getResource("/farma.png")) ,farmView.getPanel());
             tabs.addTab("Pacientes", new ImageIcon(Application.class.getResource("/cough.png")) ,pacienteView.getPanel());
             tabs.addTab("Medicamentos", new ImageIcon(Application.class.getResource("/meds.png")) ,medicamentosView.getPanel());
+            tabs.addTab("Manejo de Recetas", new ImageIcon(Application.class.getResource("/set.png")) ,manejoRecetasView.getPanel());
+
         } else if(Sesion.getUserLogged() instanceof Medico){
             window.setTitle("Prescripciones");
             window.setIconImage((new ImageIcon(Application.class.getResource("/note.png")).getImage()));
@@ -91,6 +98,7 @@ public class Application {
 
             // PESTAÑAS
             tabs.addTab("Prescribir", new ImageIcon(Application.class.getResource("/pills.png")), prescripcionView.getPanel());
+
         } else if(Sesion.getUserLogged() instanceof Farmaceuta){
             window.setTitle("Despacho");
             window.setIconImage((new ImageIcon(Application.class.getResource("/pack.png")).getImage()));
@@ -109,9 +117,15 @@ public class Application {
         Personas.presentation.Dashboard.View dashboardView = new Personas.presentation.Dashboard.View(dashboardModel);
         Personas.presentation.Dashboard.Controller dashboardController = new Personas.presentation.Dashboard.Controller(dashboardModel,dashboardView);
 
+        //ESTO ES DE HISTORICO
+        Personas.presentation.Historico.View historicoView = new Personas.presentation.Historico.View();
+        Personas.presentation.Historico.Model historicoModel = new Personas.presentation.Historico.Model();
+        Personas.presentation.Historico.Controller historicoController = new Personas.presentation.Historico.Controller(historicoView, historicoModel);
+
         // PESTAÑAS GLOBALES
         tabs.addTab("Dashboard", new ImageIcon(Application.class.getResource("/stats.png")) ,dashboardView);
         tabs.addTab("Acerca de...", new ImageIcon(Application.class.getResource("/pencil.png")), new JLabel(new ImageIcon(Application.class.getResource("/hospital.jpg"))), "View Image");
+        tabs.addTab("Histórico", new ImageIcon(Application.class.getResource("/med.png")), historicoView.getPanel());
 
         window.setContentPane(tabs);
         window.setVisible(true);

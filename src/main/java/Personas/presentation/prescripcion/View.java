@@ -4,6 +4,7 @@ import Personas.logic.Medicamento;
 import Personas.logic.Receta;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -28,7 +29,6 @@ public class View implements PropertyChangeListener {
     private Model model;
 
     public View() {
-
         // Botón seleccionar paciente
         btnSeleccionarPaciente.addActionListener(new ActionListener() {
             @Override

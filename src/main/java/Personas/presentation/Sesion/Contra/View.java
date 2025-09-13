@@ -73,7 +73,7 @@ public class View extends JDialog implements PropertyChangeListener {
             throw new Exception("Trabajador no encontrado");
         } else {
             trabajador = Service.instance().read(trabajador);
-            if (trabajador.getClave_sistema().equals(antigua)) {
+            if (!trabajador.getClave_sistema().equals(antigua)) {
                 JOptionPane.showMessageDialog(View.this, "La contraseña antigua es incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
                 resetField(passwordFieldAntigua);
                 resetField(passwordFieldNueva);

@@ -338,5 +338,10 @@ public class Service {
         } else {
             throw new Exception("Receta no existe");
         }
+        try {
+            XmlPersister.instance().store(data);
+        } catch (Exception e) {
+            throw new Exception("Error saving data to XML: " + e.getMessage());
+        }
     }
 }
