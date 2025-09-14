@@ -276,7 +276,7 @@ public class Service {
         }
         catch (Exception e) {}
 
-        }
+    }
 
     // Listar todas las recetas
     public List<Receta> findAllRecetas() {

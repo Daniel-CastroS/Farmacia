@@ -4,7 +4,6 @@ import Personas.logic.Medicamento;
 import Personas.logic.Receta;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -19,21 +18,24 @@ public class View implements PropertyChangeListener {
     private JButton btnGuardar;
     private JButton btnSeleccionarPaciente;
     private JButton btnAgregarMedicamento;
-    private JTable tableRecetas;
     private JTable tableMedicamentos;    // tabla de medicamentos
 
     private JTextField textFieldFecha;
     private JButton limpiarButton;
+    private JTextField textFieldNombrePaciente;
 
     private Controller controller;
     private Model model;
 
     public View() {
+        textFieldNombrePaciente.setEnabled(false);
         // Botón seleccionar paciente
         btnSeleccionarPaciente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.seleccionarPaciente();
+                if(controller.getModel().getCurrent().getPaciente() != null)
+                    setNombrePaciente(controller.getModel().getCurrent().getPaciente().getName());
             }
         });
 
@@ -50,9 +52,6 @@ public class View implements PropertyChangeListener {
                 }
             }
         });
-
-
-        // Botón guardar receta
         // Botón guardar receta
         btnGuardar.addActionListener(new ActionListener() {
             @Override
@@ -68,10 +67,14 @@ public class View implements PropertyChangeListener {
                     JOptionPane.showMessageDialog(panelPrincipal, "Debe agregar al menos un medicamento");
                     return;
                 }
+                if (textFieldFecha.getText().isEmpty()) {
+                    JOptionPane.showMessageDialog(panelPrincipal, "Debe ingresar la fecha de retiro");
+                    return;
+                }
 
 
                // r.setFechaRetiro(java.time.LocalDate.now().plusDays(3));
-                r.setFechaRetiro("2025-12-31");
+                r.setFechaRetiro(textFieldFecha.getText());
                 r.setEstado("Confeccionada");
 
                 // Guardar la receta
@@ -84,32 +87,29 @@ public class View implements PropertyChangeListener {
             }
         });
 
-
-
-
-
-
-
-        tableRecetas.getSelectionModel().addListSelectionListener(e -> {
+        tableMedicamentos.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                int row = tableRecetas.getSelectedRow();
+                int row = tableMedicamentos.getSelectedRow();
                 if (row >= 0) {
                     model.setCurrent(model.getList().get(row));
                 }
             }
         });
 
-
-        tableRecetas.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int row = tableRecetas.getSelectedRow();
-                if (row >= 0) {
-                    Receta seleccionada = model.getList().get(row);
-                    model.setCurrent(seleccionada);  // Esto disparará el refresh de medicamentos
-                }
+        limpiarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                model = new Model();
+                model.notifyCurrent();
+                textFieldNombrePaciente.setText("");
+                textFieldFecha.setText("");
+                tableMedicamentos.setModel(new TableModel(
+                        new int[]{TableModel.MEDICAMENTO, TableModel.PRESENTACION, TableModel.INDICACIONES, TableModel.DURACION},
+                        java.util.List.of()
+                ));
+                tableMedicamentos.setRowHeight(25);
             }
         });
-
 
     }
 
@@ -133,45 +133,42 @@ public class View implements PropertyChangeListener {
     }
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(Model.CURRENT)) {
-            Receta recetaActual = model.getCurrent();
-            if (recetaActual != null) {
-                // Refrescar tabla de medicamentos
-                int[] cols = {
-                        TableModelMedicamentos.MEDICAMENTO,
-                        TableModelMedicamentos.PRESENTACION,
-                        TableModelMedicamentos.INDICACIONES,
-                        TableModelMedicamentos.DURACION
-                };
-                tableMedicamentos.setModel(new TableModelMedicamentos(cols, recetaActual.getMedicamentos()));
+        int[] cols = {
+                TableModel.MEDICAMENTO,
+                TableModel.PRESENTACION,
+                TableModel.CANTIDAD,
+                TableModel.INDICACIONES,
+                TableModel.DURACION
+        };
+       switch (evt.getPropertyName()) {
+           case Model.CURRENT:
+               if (model.getCurrent() != null) {
+               Receta recetaActual = model.getCurrent();
+               tableMedicamentos.setModel(new TableModel(cols, recetaActual.getMedicamentos()));
+               tableMedicamentos.setRowHeight(25);
+               } else {
+                   // Limpiar tabla si no hay receta seleccionada
+                   tableMedicamentos.setModel(new TableModel(cols, List.of()));
+               }
+               break;
+           case Model.LIST:
+               if (model.getCurrent() != null){
+                   tableMedicamentos.setModel(new TableModel(cols, model.getCurrent().getMedicamentos()));
+                   tableMedicamentos.setRowHeight(25);
+               } else {
+                   tableMedicamentos.setModel(new TableModel(cols, List.of()));
+               }
+               break;
+           case Model.FILTER:
+                tableMedicamentos.setModel(new TableModel(cols, model.getCurrent().getMedicamentos()));
                 tableMedicamentos.setRowHeight(25);
-            } else {
-                // Limpiar tabla si no hay receta seleccionada
-                tableMedicamentos.setModel(new TableModelMedicamentos(new int[]{0,1,2}, List.of()));
-            }
-        }
-
-        if (evt.getPropertyName().equals(Model.LIST)) {
-            // Refresca tabla de recetas
-            int[] cols = {
-                    TableModel.PACIENTE,
-                    TableModel.FECHA_RETIRO,
-                    TableModel.ESTADO,
-            };
-            tableRecetas.setModel(new TableModel(cols, model.getList()));
-            tableRecetas.setRowHeight(30);
-        }
+                break;
+       }
     }
 
-
-
-
-    public void agregarMedicamentoAlCurrent(MedicamentoRecetado mr) {
-        Receta r = model.getCurrent();
-        if (r != null) {
-            r.getMedicamentos().add(mr);
-            model.setCurrent(r);
-        }
+    public void setNombrePaciente(String nombre) {
+        textFieldNombrePaciente.setText(nombre);
+        textFieldNombrePaciente.setEnabled(false);
     }
 
 }

@@ -67,6 +67,7 @@ public class Controller {
         // refrescar listado
         model.setFilter(new Receta());
         search(model.getFilter());
+        Service.instance().saveAllDataToXML();
     }
 
 
@@ -116,6 +117,7 @@ public class Controller {
 
     public void agregarMedicamento(Receta r, Personas.logic.MedicamentoRecetado mr) {
         r.getMedicamentos().add(mr);
+        model.notifyCurrent();
     }
 
     public List<Receta> getAll() {

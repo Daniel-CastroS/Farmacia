@@ -59,6 +59,10 @@ public class Model extends AbstractModel {
         firePropertyChange(FILTER);
     }
 
+    public void notifyCurrent() {
+        firePropertyChange(CURRENT);
+    }
+
     public int getMode() {
         return mode;
     }
