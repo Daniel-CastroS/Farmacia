@@ -85,6 +85,7 @@ public class Controller {
     // Borrar médico
     public void deleteMedico() throws Exception {
         Service.instance().deleteMedico(model.getCurrent());
+        Service.instance().saveAllDataToXML();
         search(model.getFilter());
     }
 

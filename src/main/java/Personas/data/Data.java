@@ -31,6 +31,11 @@ public class Data {
     @XmlElement(name = "receta")
     private List<Receta> recetas;
 
+   String pathMedicos = "medicos.pdf";
+   String pathPacientes = "pacientes.pdf";
+   String pathFarmaceutas = "farmaceutas.pdf";
+   String pathMedicamentos = "medicamentos.pdf";
+
     public Data() {
         medicos = new ArrayList<>();
         pacientes = new ArrayList<>();
@@ -61,5 +66,13 @@ public class Data {
     }
 
     public List<Medicamento> getMedicamentos() { return medicamentos;}
+
+    public String getPathMedicos() { return pathMedicos; }
+
+    public String getPathPacientes() { return pathPacientes; }
+
+    public String getPathFarmaceutas() { return pathFarmaceutas;  }
+
+    public String getPathMedicamentos() { return pathMedicamentos;  }
 
 }

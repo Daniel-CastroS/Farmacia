@@ -2,6 +2,8 @@ package Personas.presentation.Medicamentos;
 
 import Personas.Application;
 import Personas.logic.Medicamento;
+import Personas.logic.PDFUtil;
+import Personas.logic.Service;
 
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
@@ -75,6 +77,18 @@ public class View implements PropertyChangeListener {
                 try {
                     controller.deleteMedicamento();
                     JOptionPane.showMessageDialog(panel, "Medicamento eliminado", "Info", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        reporteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    PDFUtil.MedicamentotoPDF(model.getCurrent(), Service.instance().getData().getPathMedicamentos());
+                    JOptionPane.showMessageDialog(panel, "Reporte generado", "Info", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }

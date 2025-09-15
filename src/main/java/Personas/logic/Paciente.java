@@ -4,8 +4,8 @@ public class Paciente extends Persona{
     private String telefono;
     private String fechaNac;
 
-    public Paciente(String id, String name, String numero, String fechaNac, String rol) {
-        super(id, name, rol);
+    public Paciente(String id, String name, String numero, String fechaNac) {
+        super(id, name, "Paciente");
         this.telefono = numero;
         this.fechaNac = fechaNac;
     }

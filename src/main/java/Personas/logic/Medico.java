@@ -5,7 +5,7 @@ public class Medico extends Trabajador{
     private String clave_sistema;
 
     public Medico(String id, String name, String rol,String especialidad) {
-        super(id, name, rol,id);
+        super(id, name, "Medico", id);
         setClave_sistema(id);
         this.clave_sistema = id;
     }
@@ -13,7 +13,6 @@ public class Medico extends Trabajador{
         super();
         this.especialidad = "";
     }
-
 
     public String getEspecialidad() {
         return especialidad;

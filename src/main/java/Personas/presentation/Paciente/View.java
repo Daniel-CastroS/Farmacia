@@ -1,8 +1,11 @@
 package Personas.presentation.Paciente;
 
 import Personas.Application;
+import Personas.logic.PDFUtil;
 import Personas.logic.Paciente;
 import java.awt.BorderLayout;
+
+import Personas.logic.Service;
 import Personas.presentation.Paciente.Controller;
 import Personas.presentation.Paciente.Model;
 import Personas.presentation.Paciente.TableModel;
@@ -84,15 +87,24 @@ public class View implements PropertyChangeListener {
             }
         });
 
-
-
-
         borrarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     controller.deletePaciente();
                     JOptionPane.showMessageDialog(panelPrincipal, "Paciente eliminado", "Info", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panelPrincipal, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        reporteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    PDFUtil.PacientetoPDF(model.getCurrent(), Service.instance().getData().getPathPacientes());
+                    JOptionPane.showMessageDialog(panelPrincipal, "Reporte generado", "Info", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panelPrincipal, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -115,11 +127,7 @@ public class View implements PropertyChangeListener {
                 new int[]{TableModel.ID, TableModel.NOMBRE, TableModel.TELEFONO, TableModel.FECHANACIMIENTO},
                 new ArrayList<>()
         ));
-
-
     }
-
-
 
     public JPanel getPanel() {
         return panelPrincipal;

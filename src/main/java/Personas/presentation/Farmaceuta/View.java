@@ -2,6 +2,9 @@ package Personas.presentation.Farmaceuta;
 
 import Personas.Application;
 import Personas.logic.Farmaceuta;
+import Personas.logic.PDFUtil;
+import Personas.logic.Service;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,6 +78,17 @@ public class View implements PropertyChangeListener {
                 try {
                     controller.deleteFarmaceuta();
                     JOptionPane.showMessageDialog(panel1, "Farmacéutico eliminado", "Info", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        reporteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    PDFUtil.farmaceutaToPDF(model.getCurrent(), Service.instance().getData().getPathFarmaceutas());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }

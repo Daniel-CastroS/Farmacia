@@ -1,6 +1,8 @@
 package Personas.presentation.Medico;
 import Personas.Application;
 import Personas.logic.Medico;
+import Personas.logic.PDFUtil;
+import Personas.logic.Service;
 
 import javax.swing.*;
 import java.beans.PropertyChangeListener;
@@ -72,15 +74,24 @@ public class View implements PropertyChangeListener {
             }
         });
 
-
-
-
         borrarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     controller.deleteMedico();
                     JOptionPane.showMessageDialog(panel1, "Médico eliminado", "Info", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        reporteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    PDFUtil.MedicotoPDF(model.getCurrent(), Service.instance().getData().getPathMedicamentos());
+                    JOptionPane.showMessageDialog(panel1, "Reporte generado", "Info", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
