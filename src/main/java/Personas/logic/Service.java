@@ -1,4 +1,11 @@
 package Personas.logic;
+
+import Personas.data.Data;
+import Personas.data.XmlPersister;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +15,7 @@ import Personas.data.XmlPersister;
 
 public class Service {
     private static Service theInstance;
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     public static Service instance() {
         if (theInstance == null) theInstance = new Service();
@@ -27,6 +35,16 @@ public class Service {
 
             data = new Data();
         }
+    }
+
+
+    // Métodos para gestionar PropertyChangeSupport
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     // =============== Medico ===============
@@ -72,6 +90,8 @@ public class Service {
 
     public void deleteMedico(Medico m) throws Exception {
         data.getMedicos().remove(m);
+        propertyChangeSupport.firePropertyChange("medicos", null, data.getMedicos());
+        XmlPersister.instance().store(data);
     }
     public List<Medico> search(Medico m){
         return data.getMedicos().stream()
@@ -276,7 +296,7 @@ public class Service {
         }
         catch (Exception e) {}
 
-    }
+        }
 
     // Listar todas las recetas
     public List<Receta> findAllRecetas() {
