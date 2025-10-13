@@ -56,6 +56,7 @@ public class Controller {
         }
     }
 
+
     // Borrar farmaceuta
     public void deleteFarmaceuta() throws Exception {
         Service.instance().deleteReceta(model.getCurrent());

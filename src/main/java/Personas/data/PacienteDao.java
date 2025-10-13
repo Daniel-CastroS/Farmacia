@@ -24,7 +24,7 @@ public class PacienteDao {
         stm.setString(5, p.getFechaNac());
         int count=db.executeUpdate(stm);
         if (count==0){
-            throw new Exception("Paciente ya existe");
+            throw new Exception("Paciente ya existe ");
         }
     }
 

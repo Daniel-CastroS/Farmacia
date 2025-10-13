@@ -27,7 +27,7 @@ public class Data {
     @XmlElement(name = "medicamento")
     private List<Medicamento>  medicamentos;
 
-   @XmlElementWrapper(name = "recetas")
+    @XmlElementWrapper(name = "recetas")
     @XmlElement(name = "receta")
     private List<Receta> recetas;
 
