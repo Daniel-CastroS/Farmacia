@@ -44,6 +44,8 @@ public class Receta {
         return fechaConfeccion;
     }
 
+    public void setFechaConfeccion(String fechaConfeccion) { this.fechaConfeccion = fechaConfeccion; }
+
     public String getFechaRetiro() {
         return fechaRetiro;
     }
@@ -55,6 +57,8 @@ public class Receta {
     public List<MedicamentoRecetado> getMedicamentos() {
         return medicamentos;
     }
+
+    public void setMedicamentos(List<MedicamentoRecetado> medicamentos) { this.medicamentos = medicamentos; }
     public String getEstado() {
         return estado;
     }
