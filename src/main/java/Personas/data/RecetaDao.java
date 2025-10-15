@@ -57,11 +57,9 @@ public class RecetaDao {
                 Array medicamentosArray = rs.getArray(".medicamentos");
                 if (medicamentosArray != null) {
                     String[] medicamentos = (String[]) medicamentosArray.getArray();
-                    ArrayList<MedicamentoRecetado> medicamentosList = new ArrayList<>();
                     for (String medicamento : medicamentos) {
-                        medicamentosList.add(mr.from(rs, medicamento));
+                        d.getMedicamentos().add(mr.from(rs, medicamento));
                     }
-                    d.setMedicamentos(medicamentosList);
                 }
             } catch(Exception e){
                 //ignorar

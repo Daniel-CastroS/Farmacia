@@ -58,7 +58,6 @@ public class Receta {
         return medicamentos;
     }
 
-    public void setMedicamentos(List<MedicamentoRecetado> medicamentos) { this.medicamentos = medicamentos; }
     public String getEstado() {
         return estado;
     }
