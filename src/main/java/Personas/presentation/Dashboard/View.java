@@ -1,12 +1,15 @@
 package Personas.presentation.Dashboard;
 
 import Personas.logic.Receta;
+import com.github.lgooddatepicker.components.DatePicker;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
@@ -15,16 +18,16 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.text.NumberFormat;
 
 public class View extends JPanel implements PropertyChangeListener {
     private Model model;
     private Controller controller;
     private JPanel lineChartPanel;
     private JPanel pieChartPanel;
-    private JTextField inicioField;
-    private JTextField finField;
+    private DatePicker inicioPicker;
+    private DatePicker finPicker;
 
     private static final Color[] LINE_COLORS = {
             new Color(50, 205, 50), // Verde
@@ -40,9 +43,7 @@ public class View extends JPanel implements PropertyChangeListener {
         model.addPropertyChangeListener(this);
         initComponents();
         initializeDateFields();
-        if (controller != null) {
-            controller.mostrarEstadisticas(inicioField.getText(), finField.getText());
-        }
+        // No llamar a controller.mostrarEstadisticas aquí: el Controller aún puede no tener el view asignado.
     }
 
     private void initComponents() {
@@ -52,15 +53,15 @@ public class View extends JPanel implements PropertyChangeListener {
         JPanel controlPanel = new JPanel(new FlowLayout());
         controlPanel.setBorder(BorderFactory.createTitledBorder("Filtros"));
         controlPanel.add(new JLabel("Fecha Inicio (YYYY-MM-DD):"));
-        inicioField = new JTextField(10);
-        controlPanel.add(inicioField);
+        inicioPicker = new DatePicker();
+        controlPanel.add(inicioPicker);
         controlPanel.add(new JLabel("Fecha Fin (YYYY-MM-DD):"));
-        finField = new JTextField(10);
-        controlPanel.add(finField);
+        finPicker = new DatePicker();
+        controlPanel.add(finPicker);
         JButton updateButton = new JButton("Actualizar Gráficos");
         updateButton.addActionListener(e -> {
             if (controller != null) {
-                controller.mostrarEstadisticas(inicioField.getText(), finField.getText());
+                controller.mostrarEstadisticas(inicioPicker.getDate(), finPicker.getDate());
             } else {
                 JOptionPane.showMessageDialog(this, "Error: Controlador no inicializado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -84,27 +85,29 @@ public class View extends JPanel implements PropertyChangeListener {
     }
 
     private void initializeDateFields() {
+        // Establece valores por defecto en los DatePicker usando LocalDate.
         if (model.getRecetas() == null || model.getRecetas().isEmpty()) {
-            inicioField.setText(LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            finField.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        } else {
-            try {
-                String minDate = model.getRecetas().stream()
-                        .filter(r -> r.getFechaConfeccion() != null && !r.getFechaConfeccion().isEmpty())
-                        .map(Receta::getFechaConfeccion)
-                        .min(String::compareTo)
-                        .orElse(LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                String maxDate = model.getRecetas().stream()
-                        .filter(r -> r.getFechaConfeccion() != null && !r.getFechaConfeccion().isEmpty())
-                        .map(Receta::getFechaConfeccion)
-                        .max(String::compareTo)
-                        .orElse(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                inicioField.setText(minDate);
-                finField.setText(maxDate);
-            } catch (Exception e) {
-                inicioField.setText(LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                finField.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            }
+            inicioPicker.setDate(LocalDate.now().minusYears(1));
+            finPicker.setDate(LocalDate.now());
+            return;
+        }
+
+        try {
+            java.util.Optional<LocalDate> minOpt = model.getRecetas().stream()
+                    .map(r -> r.getFechaConfeccion() != null ? r.getFechaConfeccion() : r.getFechaRetiro())
+                    .filter(d -> d != null)
+                    .min(LocalDate::compareTo);
+
+            java.util.Optional<LocalDate> maxOpt = model.getRecetas().stream()
+                    .map(r -> r.getFechaConfeccion() != null ? r.getFechaConfeccion() : r.getFechaRetiro())
+                    .filter(d -> d != null)
+                    .max(LocalDate::compareTo);
+
+            inicioPicker.setDate(minOpt.orElse(LocalDate.now().minusYears(1)));
+            finPicker.setDate(maxOpt.orElse(LocalDate.now()));
+        } catch (Exception e) {
+            inicioPicker.setDate(LocalDate.now().minusYears(1));
+            finPicker.setDate(LocalDate.now());
         }
     }
 
@@ -117,12 +120,13 @@ public class View extends JPanel implements PropertyChangeListener {
         if (Model.RECETAS.equals(evt.getPropertyName())) {
             initializeDateFields();
             if (controller != null) {
-                controller.mostrarEstadisticas(inicioField.getText(), finField.getText());
+                controller.mostrarEstadisticas(inicioPicker.getDate(), finPicker.getDate());
             }
         }
     }
 
-    public void updateLineChart(Map<String, Map<String, Integer>> datos) {
+    public void updateLineChart(Map<String, Map<String, Integer>> datos, java.time.LocalDate inicio, java.time.LocalDate fin) {
+        System.out.println("updateLineChart called. datos=" + datos + " inicio=" + inicio + " fin=" + fin);
         lineChartPanel.removeAll();
         if (datos == null || datos.isEmpty()) {
             lineChartPanel.add(new JLabel("Sin datos para mostrar", JLabel.CENTER), BorderLayout.CENTER);
@@ -131,15 +135,34 @@ public class View extends JPanel implements PropertyChangeListener {
             return;
         }
 
+        // Generar lista completa de meses entre inicio y fin (inclusive) en formato YYYY-MM
+        java.time.LocalDate start = inicio.withDayOfMonth(1);
+        java.time.LocalDate end = fin.withDayOfMonth(1);
+        java.time.format.DateTimeFormatter monthFmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM");
+        java.util.List<String> months = new java.util.ArrayList<>();
+        for (java.time.LocalDate d = start; !d.isAfter(end); d = d.plusMonths(1)) {
+            months.add(d.format(monthFmt));
+        }
+
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         int seriesIndex = 0;
         for (Map.Entry<String, Map<String, Integer>> entry : datos.entrySet()) {
             String medicamento = entry.getKey();
             Map<String, Integer> valores = entry.getValue();
-            for (Map.Entry<String, Integer> mesData : valores.entrySet()) {
-                dataset.addValue(mesData.getValue(), medicamento, mesData.getKey());
+            System.out.println("Serie: " + medicamento + " -> " + valores);
+            // rellenar meses faltantes con 0 basados en el rango completo
+            for (String m : months) {
+                int v = valores.getOrDefault(m, 0);
+                dataset.addValue(v, medicamento, m);
             }
             seriesIndex++;
+        }
+
+        System.out.println("Dataset rows=" + dataset.getRowCount() + " columns=" + dataset.getColumnCount());
+        for (int r = 0; r < dataset.getRowCount(); r++) {
+            for (int c = 0; c < dataset.getColumnCount(); c++) {
+                System.out.println("Value[" + dataset.getRowKey(r) + "," + dataset.getColumnKey(c) + "] = " + dataset.getValue(r, c));
+            }
         }
 
         JFreeChart chart = ChartFactory.createLineChart(
@@ -151,21 +174,40 @@ public class View extends JPanel implements PropertyChangeListener {
                 true, true, false
         );
 
+        chart.setAntiAlias(true);
+        chart.setTextAntiAlias(true);
+
         CategoryPlot plot = chart.getCategoryPlot();
         plot.setBackgroundPaint(new Color(240, 240, 240));
         plot.setDomainGridlinePaint(Color.WHITE);
         plot.setRangeGridlinePaint(Color.WHITE);
+
+        // Forzar uso de LineAndShapeRenderer para mostrar líneas y puntos
+        LineAndShapeRenderer renderer = new LineAndShapeRenderer();
+        renderer.setDefaultShapesVisible(true);
+        renderer.setDefaultShapesFilled(true);
+        renderer.setDefaultStroke(new BasicStroke(2.0f));
+        // Generador de tooltips: muestra "Medicamento (Mes): cantidad"
+        renderer.setDefaultToolTipGenerator(new StandardCategoryToolTipGenerator("{0} ({1}): {2}", NumberFormat.getIntegerInstance()));
         for (int i = 0; i < seriesIndex && i < LINE_COLORS.length; i++) {
-            plot.getRenderer().setSeriesPaint(i, LINE_COLORS[i]);
+            renderer.setSeriesPaint(i, LINE_COLORS[i]);
+            renderer.setSeriesLinesVisible(i, true);
+            renderer.setSeriesShapesVisible(i, true);
+            renderer.setSeriesStroke(i, new BasicStroke(2.0f));
         }
+        plot.setRenderer(renderer);
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(450, 400));
+        chartPanel.setMouseWheelEnabled(true);
+        // Habilitar tooltips en el ChartPanel para que se muestren al pasar el cursor
+        chartPanel.setDisplayToolTips(true);
         lineChartPanel.add(chartPanel, BorderLayout.CENTER);
         lineChartPanel.revalidate();
         lineChartPanel.repaint();
     }
 
+    @SuppressWarnings("unchecked")
     public void updatePieChart(Map<String, Long> datos) {
         pieChartPanel.removeAll();
         if (datos == null || datos.isEmpty()) {

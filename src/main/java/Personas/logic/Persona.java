@@ -1,5 +1,11 @@
 package Personas.logic;
 
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "persona")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Persona {
     private String id;
     private String name;

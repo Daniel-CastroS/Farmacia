@@ -35,6 +35,28 @@ public class Service {
 
             data = new Data();
         }
+        // DEBUG: listar trabajadores cargados
+        try {
+            System.out.println("[DEBUG] Carga inicial de trabajadores:");
+            data.getFarmaceutas().forEach(f -> System.out.println("[DEBUG] Farmaceuta id='" + f.getId() + "' rol='" + f.getRol() + "' clave='" + f.getClave_sistema() + "'"));
+            data.getMedicos().forEach(m -> System.out.println("[DEBUG] Medico id='" + m.getId() + "' rol='" + m.getRol() + "' clave='" + m.getClave_sistema() + "'"));
+
+            // Normalizar roles y claves (trim) para evitar espacios y mayúsculas inconsistentes
+            data.getFarmaceutas().forEach(f -> {
+                if (f.getRol() != null) f.setRol(f.getRol().trim()); else f.setRol("");
+                if (f.getClave_sistema() != null) f.setClave_sistema(f.getClave_sistema().trim());
+            });
+            data.getMedicos().forEach(m -> {
+                if (m.getRol() != null) m.setRol(m.getRol().trim()); else m.setRol("");
+                if (m.getClave_sistema() != null) m.setClave_sistema(m.getClave_sistema().trim());
+            });
+
+            System.out.println("[DEBUG] Después de normalizar roles:");
+            data.getFarmaceutas().forEach(f -> System.out.println("[DEBUG] Farmaceuta id='" + f.getId() + "' rol='" + f.getRol() + "' clave='" + f.getClave_sistema() + "'"));
+            data.getMedicos().forEach(m -> System.out.println("[DEBUG] Medico id='" + m.getId() + "' rol='" + m.getRol() + "' clave='" + m.getClave_sistema() + "'"));
+        } catch (Exception ex) {
+            System.out.println("[DEBUG] Error al listar trabajadores: " + ex.getMessage());
+        }
     }
 
 

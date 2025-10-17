@@ -1,6 +1,8 @@
 package Personas.logic;
 
 import Personas.data.LocalDateAdapter;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlElementWrapper;
 import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -9,26 +11,32 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Receta {
+    @XmlElement
     private Paciente paciente;
 
-    //@XmlJavaTypeAdapter(LocalDateAdapter.class)
-    private String fechaConfeccion;
+    @XmlElement
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+    private LocalDate fechaConfeccion;
 
-   // @XmlJavaTypeAdapter(LocalDateAdapter.class)
-    private String fechaRetiro;
+    @XmlElement
+    @XmlJavaTypeAdapter(LocalDateAdapter.class)
+    private LocalDate fechaRetiro;
 
     @XmlElementWrapper(name = "medicamentos")
     @XmlElement(name = "medicamentoRecetado")
-    private List<MedicamentoRecetado> medicamentos;
+    private final List<MedicamentoRecetado> medicamentos;
+
+    @XmlElement
     private String estado; // "confeccionada", "proceso", "lista", "entregada"
 
     public Receta() {
         medicamentos = new ArrayList<>();
     }
+
     public Receta(Paciente paciente) {
         this.paciente = paciente;
-        //this.fechaConfeccion = 12;
         this.medicamentos = new ArrayList<>();
         this.estado = "confeccionada"; // por defecto al crear
     }
@@ -36,21 +44,24 @@ public class Receta {
     public Paciente getPaciente() {
         return paciente;
     }
+
     public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
     }
 
-    public String getFechaConfeccion() {
+    public LocalDate getFechaConfeccion() {
         return fechaConfeccion;
     }
 
-    public void setFechaConfeccion(String fechaConfeccion) { this.fechaConfeccion = fechaConfeccion; }
+    public void setFechaConfeccion(LocalDate fechaConfeccion) {
+        this.fechaConfeccion = fechaConfeccion;
+    }
 
-    public String getFechaRetiro() {
+    public LocalDate getFechaRetiro() {
         return fechaRetiro;
     }
 
-    public void setFechaRetiro(String fechaRetiro) {
+    public void setFechaRetiro(LocalDate fechaRetiro) {
         this.fechaRetiro = fechaRetiro;
     }
 

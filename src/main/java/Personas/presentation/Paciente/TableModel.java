@@ -1,11 +1,14 @@
 package Personas.presentation.Paciente;
 
-import Personas.logic.Medico;
 import Personas.logic.Paciente;
 import Personas.presentation.AbstractTableModel;
 import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 public class TableModel extends AbstractTableModel<Paciente> implements javax.swing.table.TableModel {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     public TableModel(int[] cols, List<Paciente> rows) {
         super(cols, rows);
     }
@@ -21,7 +24,10 @@ public class TableModel extends AbstractTableModel<Paciente> implements javax.sw
             case ID: return e.getId();
             case NOMBRE: return e.getName();
             case TELEFONO: return e.getTelefono();
-            case FECHANACIMIENTO: return e.getFechaNac();
+            case FECHANACIMIENTO:
+                LocalDate fecha = e.getFechaNac();
+                if (fecha == null) return "";
+                return fecha.format(FORMATTER);
             default: return "";
         }
     }

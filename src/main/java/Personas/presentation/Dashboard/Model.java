@@ -49,34 +49,30 @@ public class Model extends AbstractModel {
         }
     }
 
-    public Map<String, Map<String, Integer>> getMedicamentosPorMes(String inicio, String fin) {
+    public Map<String, Map<String, Integer>> getMedicamentosPorMes(java.time.LocalDate inicio, java.time.LocalDate fin) {
         Map<String, Map<String, Integer>> conteo = new TreeMap<>();
+        if (inicio == null || fin == null) return conteo;
         try {
-            int inicioInt = Integer.parseInt(inicio.replace("-", "").substring(0, 6));
-            int finInt = Integer.parseInt(fin.replace("-", "").substring(0, 6));
-
             for (Receta r : recetas) {
-                if (r.getFechaConfeccion() == null || r.getFechaConfeccion().isEmpty()) continue;
+                java.time.LocalDate fecha = r.getFechaConfeccion() != null ? r.getFechaConfeccion() : r.getFechaRetiro();
+                if (fecha == null) continue;
 
-                String fecha = r.getFechaConfeccion();
-                String ym = fecha.substring(0, 7);
-                int ymInt = Integer.parseInt(fecha.replace("-", "").substring(0, 6));
+                if (fecha.isBefore(inicio) || fecha.isAfter(fin)) continue;
 
-                if (ymInt >= inicioInt && ymInt <= finInt) {
-                    if (r.getMedicamentos() != null) {
-                        for (MedicamentoRecetado med : r.getMedicamentos()) {
-                            String nombre = med.getMedicamento().getNombre();
-                            if (nombre == null || nombre.isEmpty()) nombre = "Desconocido";
+                if (r.getMedicamentos() != null) {
+                    String ym = String.format("%04d-%02d", fecha.getYear(), fecha.getMonthValue());
+                    for (MedicamentoRecetado med : r.getMedicamentos()) {
+                        String nombre = med.getMedicamento().getNombre();
+                        if (nombre == null || nombre.isEmpty()) nombre = "Desconocido";
 
-                            conteo.putIfAbsent(nombre, new TreeMap<>());
-                            Map<String, Integer> porMes = conteo.get(nombre);
-                            porMes.put(ym, porMes.getOrDefault(ym, 0) + 1);
-                        }
+                        conteo.putIfAbsent(nombre, new TreeMap<>());
+                        Map<String, Integer> porMes = conteo.get(nombre);
+                        porMes.put(ym, porMes.getOrDefault(ym, 0) + 1);
                     }
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error en rango de fechas: " + e.getMessage());
+            System.err.println("Error en getMedicamentosPorMes: " + e.getMessage());
         }
         return conteo;
     }

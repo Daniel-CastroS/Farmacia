@@ -45,7 +45,17 @@ public class Application {
 
         JTabbedPane tabs = new JTabbedPane();
 
-        if (Sesion.getUserLogged().getRol().equals("Admin")) {
+        // comprobar rol Admin de forma robusta
+        String role = null;
+        if (Sesion.getUserLogged() != null) role = Sesion.getUserLogged().getRol();
+
+        // DEBUG: imprimir info del usuario logeado
+        if (Sesion.getUserLogged() != null) {
+            System.out.println("[DEBUG] Usuario logueado id='" + Sesion.getUserLogged().getId() + "' rol='" + Sesion.getUserLogged().getRol() + "' clase='" + Sesion.getUserLogged().getClass().getSimpleName() + "'");
+            String r = Sesion.getUserLogged().getRol();
+            System.out.println("[DEBUG] Rol raw: '" + r + "' (len=" + (r == null ? 0 : r.length()) + ")");
+        }
+        if (role != null && role.trim().equalsIgnoreCase("admin")) {
             window.setTitle("Gestión");
             window.setIconImage((new ImageIcon(Application.class.getResource("/setting.png")).getImage()));
 

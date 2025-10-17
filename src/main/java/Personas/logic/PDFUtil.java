@@ -6,7 +6,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 public class PDFUtil {
     public static void farmaceutaToPDF(Farmaceuta f, String outputPdfPath) throws IOException, DocumentException {
@@ -36,7 +36,11 @@ public class PDFUtil {
         document.add(new Paragraph("ID: " + p.getId()));
         document.add(new Paragraph("Rol: " + p.getRol()));
         document.add(new Paragraph("Teléfono: " + p.getTelefono()));
-        document.add(new Paragraph("Fecha de Nacimiento: " + p.getFechaNac()));
+        String fechaStr = "";
+        if (p.getFechaNac() != null) {
+            fechaStr = p.getFechaNac().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        }
+        document.add(new Paragraph("Fecha de Nacimiento: " + fechaStr));
         document.add(new Paragraph(" ")); // Blank line between entries
 
         document.close();

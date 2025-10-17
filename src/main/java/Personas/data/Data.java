@@ -31,10 +31,10 @@ public class Data {
     @XmlElement(name = "receta")
     private List<Receta> recetas;
 
-   String pathMedicos = "medicos.pdf";
-   String pathPacientes = "pacientes.pdf";
-   String pathFarmaceutas = "farmaceutas.pdf";
-   String pathMedicamentos = "medicamentos.pdf";
+    String pathMedicos = "medicos.pdf";
+    String pathPacientes = "pacientes.pdf";
+    String pathFarmaceutas = "farmaceutas.pdf";
+    String pathMedicamentos = "medicamentos.pdf";
 
     public Data() {
         medicos = new ArrayList<>();

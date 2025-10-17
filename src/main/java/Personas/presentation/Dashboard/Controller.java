@@ -1,8 +1,8 @@
 package Personas.presentation.Dashboard;
 
 import javax.swing.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.beans.PropertyChangeEvent;
+import java.time.LocalDate;
 import java.util.Map;
 
 public class Controller {
@@ -17,28 +17,41 @@ public class Controller {
     // Nuevo método para asignar el View después de la creación
     public void setView(View view) {
         this.view = view;
+        // Forzar inicialización y actualización ahora que view está asignado
+        if (this.view != null) {
+            try {
+                this.view.propertyChange(new PropertyChangeEvent(model, Model.RECETAS, null, null));
+            } catch (Exception e) {
+                // ignorar
+            }
+        }
     }
 
-    public void mostrarEstadisticas(String inicio, String fin) {
+    public void mostrarEstadisticas(LocalDate inicio, LocalDate fin) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            sdf.setLenient(false);
-            Date inicioDate = sdf.parse(inicio);
-            Date finDate = sdf.parse(fin);
+            System.out.println("mostrarEstadisticas called. inicio=" + inicio + " fin=" + fin);
+            if (inicio == null || fin == null) {
+                JOptionPane.showMessageDialog(null, "Fechas nulas.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            if (inicioDate.after(finDate)) {
+            if (inicio.isAfter(fin)) {
                 JOptionPane.showMessageDialog(null, "La fecha de inicio debe ser anterior a la fecha de fin.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             Map<String, Map<String, Integer>> datosLine = model.getMedicamentosPorMes(inicio, fin);
+            System.out.println("datosLine=" + datosLine);
+            Map<String, Long> datosPie = model.getRecetasPorEstado();
+            System.out.println("datosPie=" + datosPie);
             if (view != null) {
-                view.updateLineChart(datosLine);
-                Map<String, Long> datosPie = model.getRecetasPorEstado();
+                view.updateLineChart(datosLine, inicio, fin);
                 view.updatePieChart(datosPie);
+            } else {
+                System.out.println("view es null, no se actualizan gráficos");
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Formato de fecha inválido. Use YYYY-MM-DD (ej. 2023-01-01).", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al generar estadísticas.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

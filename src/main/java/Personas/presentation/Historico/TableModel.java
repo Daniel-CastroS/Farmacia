@@ -4,8 +4,12 @@ import Personas.logic.Receta;
 import Personas.presentation.AbstractTableModel;
 
 import java.util.List;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 public class TableModel extends AbstractTableModel<Receta> implements javax.swing.table.TableModel{
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     public TableModel(int[] cols, List<Receta> rows) {
         super(cols, rows);
     }
@@ -21,7 +25,10 @@ public class TableModel extends AbstractTableModel<Receta> implements javax.swin
         switch (cols[col]) {
             case ID_PACIENTE: return e.getPaciente().getId();
             case NOMBRE_PACIENTE: return e.getPaciente().getName();
-            case FECHA_RETIRO: return e.getFechaRetiro();
+            case FECHA_RETIRO:
+                LocalDate d = e.getFechaRetiro();
+                if (d == null) return "";
+                return d.format(FORMATTER);
             case CANTIDAD_MEDICINAS: return e.getMedicamentos().size();
             case ESTADO: return e.getEstado();
             default: return "";

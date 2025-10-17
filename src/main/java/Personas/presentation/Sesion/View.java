@@ -83,6 +83,8 @@ public class View extends JDialog implements PropertyChangeListener {
             } else {
                 trabajador = Service.instance().read(trabajador);
                 if(trabajador.getClave_sistema().equals(textFieldClave.getText())){
+                    // set the clave in the object we pass to the controller so controller can re-check if needed
+                    trabajador.setClave_sistema(textFieldClave.getText());
                     controller.login(trabajador);
                     dispose();
                 } else {

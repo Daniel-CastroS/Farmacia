@@ -7,7 +7,7 @@ import Personas.logic.Service;
 import Personas.Application;
 import java.util.List;
 import javax.swing.JOptionPane;
-
+import java.time.LocalDate;
 
 public class Controller {
 
@@ -39,8 +39,7 @@ public class Controller {
     }
     public void save(Receta r) throws Exception {
         // asegurar valores por defecto
-       // if (r.getFechaRetiro() == null) r.setFechaRetiro(java.time.LocalDate.now().plusDays(3));
-        if (r.getFechaRetiro() == null) r.setFechaRetiro("2025-12-31");
+        if (r.getFechaRetiro() == null) r.setFechaRetiro(LocalDate.now().plusDays(3));
         if (r.getEstado() == null) r.setEstado("Confeccionada");
 
         // crear copia para guardar y evitar aliasing

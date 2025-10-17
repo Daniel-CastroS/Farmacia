@@ -4,27 +4,32 @@ import Personas.logic.Paciente;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PacienteDao {
     Database db;
 
-    public void PacienteDao(){
+    public PacienteDao(){
         db= Database.instance();
     }
     public void create(Paciente p) throws Exception{
-        String sql="insert into Paciente (id, name, rol, telefono, fechaNac" +
+        String sql="insert into Paciente (id, name, rol, telefono, fechaNac) " +
                 "values(?,?,?,?,?)";
         PreparedStatement stm = db.prepareStatement(sql);
         stm.setString(1, p.getId());
         stm.setString(2, p.getName());
-        stm.setString(3, p.getTelefono());
-        stm.setString(4, p.getRol());
-        stm.setString(5, p.getFechaNac());
+        stm.setString(3, p.getRol());
+        stm.setString(4, p.getTelefono());
+        if (p.getFechaNac() != null) {
+            stm.setDate(5, Date.valueOf(p.getFechaNac()));
+        } else {
+            stm.setNull(5, java.sql.Types.DATE);
+        }
         int count=db.executeUpdate(stm);
         if (count==0){
-            throw new Exception("Paciente ya existe ");
+            throw new Exception("No se pudo crear el paciente");
         }
     }
 
@@ -45,18 +50,20 @@ public class PacienteDao {
     }
 
     public void update(Paciente p) throws Exception{
-        String sql="update paciente set id=?,name=?,rol=?,telefono=?,fechaNac,"+
+        String sql="update paciente set id=?,name=?,rol=?,telefono=?,fechaNac=? " +
                 "where id=?";
         PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, p.getName());
-        stm.setString(2, p.getId());
+        stm.setString(1, p.getId());
+        stm.setString(2, p.getName());
         stm.setString(3, p.getRol());
         stm.setString(4, p.getTelefono());
-        stm.setString(5, p.getFechaNac());
-        int count=db.executeUpdate(stm);
-        if (count==0){
-            throw new Exception("Paciente ya existe");
+        if (p.getFechaNac() != null) {
+            stm.setDate(5, Date.valueOf(p.getFechaNac()));
+        } else {
+            stm.setNull(5, java.sql.Types.DATE);
         }
+        stm.setString(6, p.getId());
+        int count=db.executeUpdate(stm);
         if (count==0){
             throw new Exception("Paciente no existe");
         }
@@ -73,10 +80,10 @@ public class PacienteDao {
     }
 
     public List<Paciente> findByNombre(Paciente filtro){
-        List<Paciente> resultado = new ArrayList<Paciente>();
+        List<Paciente> resultado = new ArrayList<>();
         try {
             String sql="select * from Paciente p "+
-                    "where p.nombre like ?";
+                    "where p.name like ?";
             PreparedStatement stm = db.prepareStatement(sql);
             stm.setString(1, "%"+filtro.getName()+"%");
             ResultSet rs =  db.executeQuery(stm);
@@ -85,7 +92,7 @@ public class PacienteDao {
                 p= from(rs,"p");
                 resultado.add(p);
             }
-        } catch (SQLException ex) {  }
+        } catch (SQLException ex) {  ex.printStackTrace(); }
         return resultado;
     }
 
@@ -96,7 +103,12 @@ public class PacienteDao {
             p.setId(rs.getString(alias + ".id"));
             p.setTelefono(rs.getString(alias + ".telefono"));
             p.setRol(rs.getString(alias + ".rol"));
-            p.setFechaNac(rs.getString(alias + ".fechaNac"));
+            java.sql.Date sqlDate = rs.getDate(alias + ".fechaNac");
+            if (sqlDate != null) {
+                p.setFechaNac(sqlDate.toLocalDate());
+            } else {
+                p.setFechaNac(null);
+            }
             return p;
         } catch (SQLException ex) {
             return null;

@@ -19,12 +19,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import com.github.lgooddatepicker.components.DatePicker;
 
 public class View implements PropertyChangeListener {
     private JTextField idTextField;
     private JTextField telephonTextField;
     private JTextField nameTextField;
-    private JTextField birthTextField;
+    private DatePicker birthDatePicker;
     private JButton guardarButton;
     private JButton limpiarButton;
     private JButton borrarButton;
@@ -65,7 +66,7 @@ public class View implements PropertyChangeListener {
                         resetField(idTextField);
                         resetField(nameTextField);
                         resetField(telephonTextField);
-                        resetField(birthTextField);
+                        birthDatePicker.setDate(null);
                         JOptionPane.showMessageDialog(panelPrincipal, "Paciente registrado", "Info", JOptionPane.INFORMATION_MESSAGE);
                     } catch (Exception ex) {
                         JOptionPane.showMessageDialog(panelPrincipal, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -118,7 +119,7 @@ public class View implements PropertyChangeListener {
                 resetField(idTextField);
                 resetField(nameTextField);
                 resetField(telephonTextField);
-                resetField(birthTextField);
+                birthDatePicker.setDate(null);
 
             }
         });
@@ -163,7 +164,7 @@ public class View implements PropertyChangeListener {
                 idTextField.setText(current.getId());
                 nameTextField.setText(current.getName());
                 telephonTextField.setText(current.getTelefono());
-                birthTextField.setText(current.getFechaNac());
+                birthDatePicker.setDate(current.getFechaNac());
 
                 // habilitar/deshabilitar según modo
                 if (model.getMode() == Personas.Application.MODE_EDIT) {
@@ -193,7 +194,7 @@ public class View implements PropertyChangeListener {
         p.setId(idTextField.getText());
         p.setName(nameTextField.getText());
         p.setTelefono(telephonTextField.getText());
-        p.setFechaNac(birthTextField.getText());
+        p.setFechaNac(birthDatePicker.getDate());
         return p;
     }
 
@@ -223,13 +224,13 @@ public class View implements PropertyChangeListener {
             telephonTextField.setBackground(null);
             telephonTextField.setToolTipText(null);
         }
-        if (birthTextField.getText().trim().isEmpty()) {
+        if (birthDatePicker.getDate() == null) {
             valid = false;
-            birthTextField.setBackground(Application.BACKGROUND_ERROR);
-            birthTextField.setToolTipText("Fecha de nacimiento requerida");
+            birthDatePicker.setBackground(Application.BACKGROUND_ERROR);
+            birthDatePicker.setToolTipText("Fecha de nacimiento requerida");
         } else {
-            birthTextField.setBackground(null);
-            birthTextField.setToolTipText(null);
+            birthDatePicker.setBackground(null);
+            birthDatePicker.setToolTipText(null);
         }
         return valid;
     }

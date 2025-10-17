@@ -5,7 +5,7 @@ public class Trabajador extends Persona{
 
     public Trabajador(String id, String name, String rol, String clave_sistema) {
         super(id, name, rol);
-        this.clave_sistema = id;
+        this.clave_sistema = clave_sistema;
     }
 
     public Trabajador() {

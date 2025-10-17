@@ -10,6 +10,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import Personas.logic.MedicamentoRecetado;
+import com.github.lgooddatepicker.components.DatePicker;
 
 
 public class View implements PropertyChangeListener {
@@ -20,7 +21,7 @@ public class View implements PropertyChangeListener {
     private JButton btnAgregarMedicamento;
     private JTable tableMedicamentos;    // tabla de medicamentos
 
-    private JTextField textFieldFecha;
+    private DatePicker fechaRetiroPicker;
     private JButton limpiarButton;
     private JTextField textFieldNombrePaciente;
 
@@ -67,14 +68,12 @@ public class View implements PropertyChangeListener {
                     JOptionPane.showMessageDialog(panelPrincipal, "Debe agregar al menos un medicamento");
                     return;
                 }
-                if (textFieldFecha.getText().isEmpty()) {
+                if (fechaRetiroPicker.getDate() == null) {
                     JOptionPane.showMessageDialog(panelPrincipal, "Debe ingresar la fecha de retiro");
                     return;
                 }
 
-
-               // r.setFechaRetiro(java.time.LocalDate.now().plusDays(3));
-                r.setFechaRetiro(textFieldFecha.getText());
+                r.setFechaRetiro(fechaRetiroPicker.getDate());
                 r.setEstado("Confeccionada");
 
                 // Guardar la receta
@@ -102,7 +101,7 @@ public class View implements PropertyChangeListener {
                 model = new Model();
                 model.notifyCurrent();
                 textFieldNombrePaciente.setText("");
-                textFieldFecha.setText("");
+                fechaRetiroPicker.setDate(null);
                 tableMedicamentos.setModel(new TableModel(
                         new int[]{TableModel.MEDICAMENTO, TableModel.PRESENTACION, TableModel.INDICACIONES, TableModel.DURACION},
                         java.util.List.of()
@@ -146,17 +145,27 @@ public class View implements PropertyChangeListener {
                Receta recetaActual = model.getCurrent();
                tableMedicamentos.setModel(new TableModel(cols, recetaActual.getMedicamentos()));
                tableMedicamentos.setRowHeight(25);
+               // sincronizar fecha y paciente en la UI
+               fechaRetiroPicker.setDate(recetaActual.getFechaRetiro());
+               if (recetaActual.getPaciente() != null) setNombrePaciente(recetaActual.getPaciente().getName());
                } else {
                    // Limpiar tabla si no hay receta seleccionada
                    tableMedicamentos.setModel(new TableModel(cols, List.of()));
+                   fechaRetiroPicker.setDate(null);
+                   textFieldNombrePaciente.setText("");
                }
                break;
            case Model.LIST:
                if (model.getCurrent() != null){
                    tableMedicamentos.setModel(new TableModel(cols, model.getCurrent().getMedicamentos()));
                    tableMedicamentos.setRowHeight(25);
+                   // mantener sincronía con current
+                   fechaRetiroPicker.setDate(model.getCurrent().getFechaRetiro());
+                   if (model.getCurrent().getPaciente() != null) setNombrePaciente(model.getCurrent().getPaciente().getName());
                } else {
                    tableMedicamentos.setModel(new TableModel(cols, List.of()));
+                   fechaRetiroPicker.setDate(null);
+                   textFieldNombrePaciente.setText("");
                }
                break;
            case Model.FILTER:
