@@ -6,8 +6,12 @@ import Personas.logic.Receta;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import Personas.logic.MedicamentoRecetado;
 import com.github.lgooddatepicker.components.DatePicker;
@@ -72,6 +76,10 @@ public class View implements PropertyChangeListener {
                     JOptionPane.showMessageDialog(panelPrincipal, "Debe ingresar la fecha de retiro");
                     return;
                 }
+                if(fechaRetiroPicker.getDate().isBefore(LocalDate.now())) {
+                    JOptionPane.showMessageDialog(panelPrincipal, "La fecha de retiro no puede ser anterior a la fecha actual");
+                    return;
+                }
 
                 r.setFechaRetiro(fechaRetiroPicker.getDate());
                 r.setEstado("Confeccionada");
@@ -86,11 +94,16 @@ public class View implements PropertyChangeListener {
             }
         });
 
-        tableMedicamentos.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
+        tableMedicamentos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 int row = tableMedicamentos.getSelectedRow();
-                if (row >= 0) {
-                    model.setCurrent(model.getList().get(row));
+                if (row != -1) {
+                    try {
+                        controller.editMed(row);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         });
@@ -98,8 +111,8 @@ public class View implements PropertyChangeListener {
         limpiarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                model = new Model();
-                model.notifyCurrent();
+                model.setCurrent(new Receta());
+                model.setListMed(new ArrayList<>());
                 textFieldNombrePaciente.setText("");
                 fechaRetiroPicker.setDate(null);
                 tableMedicamentos.setModel(new TableModel(

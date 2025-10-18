@@ -115,7 +115,7 @@
                 <telefono> 70932878</telefono>
                 <fechaNac>24/05/2003</fechaNac>
             </paciente>
-            <fechaRetiro>28/09/2025</fechaRetiro>
+            <fechaRetiro>17/10/2025</fechaRetiro>
             <medicamentos>
                 <medicamentoRecetado>
                     <medicamento>
@@ -148,7 +148,7 @@
                 <telefono>12124123 </telefono>
                 <fechaNac>02/04/1990</fechaNac>
             </paciente>
-            <fechaRetiro>15/09/2025</fechaRetiro>
+            <fechaRetiro>10/10/2025</fechaRetiro>
             <medicamentos>
                 <medicamentoRecetado>
                     <medicamento>
@@ -172,29 +172,6 @@
                 </medicamentoRecetado>
             </medicamentos>
             <estado>Entregada</estado>
-        </receta>
-        <receta>
-            <paciente>
-                <id>119</id>
-                <name>Daniel</name>
-                <rol></rol>
-                <telefono>88214770</telefono>
-                <fechaNac>01/11/2004</fechaNac>
-            </paciente>
-            <fechaRetiro>16/09/2025</fechaRetiro>
-            <medicamentos>
-                <medicamentoRecetado>
-                    <medicamento>
-                        <codigo>303</codigo>
-                        <nombre>Vitaminas</nombre>
-                        <presentacion>200mg</presentacion>
-                    </medicamento>
-                    <cantidad>40</cantidad>
-                    <indicaciones>Tomar 2 por día</indicaciones>
-                    <duracionDias>20</duracionDias>
-                </medicamentoRecetado>
-            </medicamentos>
-            <estado>Confeccionada</estado>
         </receta>
         <receta>
             <paciente>
@@ -235,6 +212,72 @@
                     <cantidad>50</cantidad>
                     <indicaciones>Tres al dia pa volverse loco</indicaciones>
                     <duracionDias>30</duracionDias>
+                </medicamentoRecetado>
+            </medicamentos>
+            <estado>Confeccionada</estado>
+        </receta>
+        <receta>
+            <paciente>
+                <id>118</id>
+                <name>Emmanuel</name>
+                <rol></rol>
+                <telefono> 70932878</telefono>
+                <fechaNac>24/05/2003</fechaNac>
+            </paciente>
+            <fechaRetiro>06/11/2025</fechaRetiro>
+            <medicamentos>
+                <medicamentoRecetado>
+                    <medicamento>
+                        <codigo>303</codigo>
+                        <nombre>Vitaminas</nombre>
+                        <presentacion>200mg</presentacion>
+                    </medicamento>
+                    <cantidad>12</cantidad>
+                    <indicaciones>Tomar una cada día</indicaciones>
+                    <duracionDias>12</duracionDias>
+                </medicamentoRecetado>
+                <medicamentoRecetado>
+                    <medicamento>
+                        <codigo>808</codigo>
+                        <nombre>Paracetamol</nombre>
+                        <presentacion>100mg</presentacion>
+                    </medicamento>
+                    <cantidad>22</cantidad>
+                    <indicaciones>Tomar cada que sienta malestar</indicaciones>
+                    <duracionDias>100</duracionDias>
+                </medicamentoRecetado>
+                <medicamentoRecetado>
+                    <medicamento>
+                        <codigo>505</codigo>
+                        <nombre>Clonazepam</nombre>
+                        <presentacion>400mg</presentacion>
+                    </medicamento>
+                    <cantidad>10</cantidad>
+                    <indicaciones>Tomar antes de dormir</indicaciones>
+                    <duracionDias>10</duracionDias>
+                </medicamentoRecetado>
+            </medicamentos>
+            <estado>Confeccionada</estado>
+        </receta>
+        <receta>
+            <paciente>
+                <id>909</id>
+                <name>Maria</name>
+                <rol></rol>
+                <telefono>12124123 </telefono>
+                <fechaNac>02/04/1990</fechaNac>
+            </paciente>
+            <fechaRetiro>30/10/2025</fechaRetiro>
+            <medicamentos>
+                <medicamentoRecetado>
+                    <medicamento>
+                        <codigo>808</codigo>
+                        <nombre>Paracetamol</nombre>
+                        <presentacion>100mg</presentacion>
+                    </medicamento>
+                    <cantidad>21</cantidad>
+                    <indicaciones>dasd</indicaciones>
+                    <duracionDias>21</duracionDias>
                 </medicamentoRecetado>
             </medicamentos>
             <estado>Confeccionada</estado>

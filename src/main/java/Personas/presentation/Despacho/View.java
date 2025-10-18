@@ -18,7 +18,6 @@ import java.util.Objects;
 public class View implements PropertyChangeListener {
     private JTable tableRecetas;
     private JButton buscarButton;
-    private JButton entregarButton;
     private JTextField textFieldID;
     private JPanel panel1;
     private JButton resetButton;
@@ -47,17 +46,6 @@ public class View implements PropertyChangeListener {
                 resetField(textFieldID);
             }
         });
-
-        entregarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try{
-                    entregarReceta();
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Información", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        });
         resetButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -74,7 +62,11 @@ public class View implements PropertyChangeListener {
             public void mouseClicked(MouseEvent e) {
                 int row = tableRecetas.getSelectedRow();
                 if (row != -1) {
-                    controller.edit(row);  // Llama al método edit del controller
+                    try {
+                        controller.edit(row);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
         });
@@ -129,15 +121,6 @@ public class View implements PropertyChangeListener {
 
         this.panel1.revalidate();
     }
-
-    private void entregarReceta() throws  Exception{
-        if (model.getCurrent() == null) return;
-        if (!Objects.equals(model.getCurrent().getEstado(), "Entregada")) {
-            model.getCurrent().setEstado("Entregada");
-            Service.instance().saveAllDataToXML();
-        }
-    }
-
 
     private boolean validateFields() {
         boolean valid = true;

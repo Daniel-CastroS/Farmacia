@@ -35,6 +35,11 @@ public class Model extends AbstractModel {
         this.mode = Application.MODE_CREATE;
     }
 
+    public void modificarReceta(Receta r) {
+        this.current = r;
+        firePropertyChange(CURRENT);
+    }
+
     // GETTERS Y SETTERS
     public List<Receta> getList() { return list; }
 

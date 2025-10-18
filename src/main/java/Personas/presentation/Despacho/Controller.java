@@ -1,5 +1,6 @@
 package Personas.presentation.Despacho;
 
+import Personas.logic.MedicamentoRecetado;
 import Personas.logic.Receta;
 import Personas.logic.Service;
 import Personas.Application;
@@ -44,13 +45,24 @@ public class Controller {
     }
 
     // Editar (cargar una Receta desde la lista)
-    public void edit(int row) {
+    public void edit(int row) throws Exception {
         Receta f = model.getList().get(row);
         try {
-            model.setMode(Personas.Application.MODE_EDIT);
-            model.setCurrent(Service.instance().readReceta(f));
+            model.setCurrent(f);
+            model.setMode(Application.MODE_EDIT);
+            Personas.presentation.Despacho.Detalle.Editar viewD = new Personas.presentation.Despacho.Detalle.Editar(this, f);
+            viewD.setModal(true);
+            viewD.pack();
+            viewD.setLocationRelativeTo(view.getPanel());
+            viewD.setVisible(true);
         } catch (Exception ex) {
+            ex.printStackTrace(); // O muestra el error si lo deseas
         }
+        Service.instance().saveAllDataToXML();
+    }
+
+    public void modificarReceta(Receta receta) throws Exception {
+        model.modificarReceta(receta);
     }
 
     // Borrar farmaceuta

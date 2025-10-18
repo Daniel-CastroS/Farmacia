@@ -80,9 +80,8 @@ public class View extends JDialog {
 
             // Abrir MiniView de detalle
             Personas.presentation.prescripcion.detalle.Detalle detalleDialog =
-                    new Personas.presentation.prescripcion.detalle.Detalle(controller, controller.getModel().getCurrent(), seleccionado);
+                    new Personas.presentation.prescripcion.detalle.Detalle(controller, controller.getModel().getCurrent(), seleccionado, -1);
             detalleDialog.mostrar();
-
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un medicamento");

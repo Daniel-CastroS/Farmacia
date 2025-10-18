@@ -5,6 +5,7 @@ import Personas.logic.MedicamentoRecetado;
 import Personas.logic.Receta;
 import Personas.presentation.prescripcion.Controller;
 
+import javax.naming.ldap.Control;
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -20,7 +21,7 @@ public class Detalle extends JDialog {
     private Receta receta;
     private Medicamento medicamento;
 
-    public Detalle(Controller controller, Receta receta, Medicamento medicamento) {
+    public Detalle(Controller controller, Receta receta, Medicamento medicamento, int pos) {
         this.controller = controller;
         this.receta = receta;
         this.medicamento = medicamento;
@@ -31,7 +32,11 @@ public class Detalle extends JDialog {
 
         buttonAgregar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                onAgregar();
+                if(pos != -1){
+                    modi(pos);
+                }else {
+                    onAgregar();
+                }
             }
         });
 
@@ -62,7 +67,21 @@ public class Detalle extends JDialog {
             String indicaciones = textIndicaciones.getText();
 
             MedicamentoRecetado mr = new MedicamentoRecetado(medicamento, cantidad, indicaciones, duracion);
-            controller.agregarMedicamento(receta, mr);
+            controller.agregarMedicamento(mr);
+            dispose();
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Cantidad y duración deben ser números", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void modi(int pos){
+        try {
+            int cantidad = Integer.parseInt(textCantidad.getText());
+            int duracion = Integer.parseInt(textDuracion.getText());
+            String indicaciones = textIndicaciones.getText();
+
+            MedicamentoRecetado mr = new MedicamentoRecetado(medicamento, cantidad, indicaciones, duracion);
+            controller.modificarMedicamento(mr, pos);
             dispose();
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Cantidad y duración deben ser números", "Error", JOptionPane.ERROR_MESSAGE);

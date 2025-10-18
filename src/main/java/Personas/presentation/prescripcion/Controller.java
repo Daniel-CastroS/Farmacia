@@ -1,9 +1,6 @@
 package Personas.presentation.prescripcion;
 
-import Personas.logic.MedicamentoRecetado;
-import Personas.logic.Receta;
-import Personas.logic.Paciente;
-import Personas.logic.Service;
+import Personas.logic.*;
 import Personas.Application;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -114,9 +111,24 @@ public class Controller {
         model.getCurrent().setPaciente(p);
     }
 
-    public void agregarMedicamento(Receta r, Personas.logic.MedicamentoRecetado mr) {
-        r.getMedicamentos().add(mr);
-        model.notifyCurrent();
+    public void agregarMedicamento(Personas.logic.MedicamentoRecetado mr) {
+        model.addMedicamento(mr);
+    }
+
+    public void editMed(int row) throws Exception {
+        MedicamentoRecetado m = model.getListMed().get(row);
+        try {
+            model.setCurrentMed(m);
+            model.setMode(Application.MODE_EDIT);
+            Personas.presentation.prescripcion.detalle.Detalle viewD = new Personas.presentation.prescripcion.detalle.Detalle(this, this.model.getCurrent(), m.getMedicamento(), row);
+            viewD.setModal(true);
+            viewD.pack();
+            viewD.setLocationRelativeTo(view.getPanel());
+            viewD.setVisible(true);
+        } catch (Exception ex) {
+            ex.printStackTrace(); // O muestra el error si lo deseas
+        }
+        Service.instance().saveAllDataToXML();
     }
 
     public List<Receta> getAll() {
@@ -125,5 +137,9 @@ public class Controller {
 
     public Model getModel() {
         return model;
+    }
+
+    public void modificarMedicamento(MedicamentoRecetado mr, int pos) {
+        model.modiMed(mr, pos);
     }
 }
