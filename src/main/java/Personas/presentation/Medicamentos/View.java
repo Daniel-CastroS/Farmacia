@@ -87,7 +87,7 @@ public class View implements PropertyChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    PDFUtil.MedicamentotoPDF(model.getCurrent(), Service.instance().getData().getPathMedicamentos());
+                    PDFUtil.MedicamentotoPDF(model.getCurrent(), Service.instance().getPathMedicamentos());
                     JOptionPane.showMessageDialog(panel, "Reporte generado", "Info", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

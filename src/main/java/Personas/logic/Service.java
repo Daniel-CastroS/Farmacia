@@ -1,389 +1,218 @@
 package Personas.logic;
 
-import Personas.data.Data;
-import Personas.data.XmlPersister;
+import Personas.data.*;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.ArrayList;
+import java.sql.PreparedStatement;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import Personas.data.Data;
-import Personas.data.XmlPersister;
-
 public class Service {
     private static Service theInstance;
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    String pathMedicos = "medicos.pdf";
+    String pathPacientes = "pacientes.pdf";
+    String pathFarmaceutas = "farmaceutas.pdf";
+    String pathMedicamentos = "medicamentos.pdf";
+    private MedicoDao medicoDao;
+    private FarmaceutaDao farmaceutaDao;
+    private PacienteDao pacienteDao;
+    private MedicamentoDao medicamentoDao;
+    private MedicamentoRecetadoDao medicamentoRecetadoDao;
+    private RecetaDao recetaDao;
 
     public static Service instance() {
         if (theInstance == null) theInstance = new Service();
         return theInstance;
     }
 
-    private Data data;
-
-    public Data getData() {return data;}
-
-
-    private Service() {
-        try{
-            data= XmlPersister.instance().load();
-        }
-        catch(Exception e) {
-
-            data = new Data();
-        }
-        // DEBUG: listar trabajadores cargados
-        try {
-            System.out.println("[DEBUG] Carga inicial de trabajadores:");
-            data.getFarmaceutas().forEach(f -> System.out.println("[DEBUG] Farmaceuta id='" + f.getId() + "' rol='" + f.getRol() + "' clave='" + f.getClave_sistema() + "'"));
-            data.getMedicos().forEach(m -> System.out.println("[DEBUG] Medico id='" + m.getId() + "' rol='" + m.getRol() + "' clave='" + m.getClave_sistema() + "'"));
-
-            // Normalizar roles y claves (trim) para evitar espacios y mayúsculas inconsistentes
-            data.getFarmaceutas().forEach(f -> {
-                if (f.getRol() != null) f.setRol(f.getRol().trim()); else f.setRol("");
-                if (f.getClave_sistema() != null) f.setClave_sistema(f.getClave_sistema().trim());
-            });
-            data.getMedicos().forEach(m -> {
-                if (m.getRol() != null) m.setRol(m.getRol().trim()); else m.setRol("");
-                if (m.getClave_sistema() != null) m.setClave_sistema(m.getClave_sistema().trim());
-            });
-
-            System.out.println("[DEBUG] Después de normalizar roles:");
-            data.getFarmaceutas().forEach(f -> System.out.println("[DEBUG] Farmaceuta id='" + f.getId() + "' rol='" + f.getRol() + "' clave='" + f.getClave_sistema() + "'"));
-            data.getMedicos().forEach(m -> System.out.println("[DEBUG] Medico id='" + m.getId() + "' rol='" + m.getRol() + "' clave='" + m.getClave_sistema() + "'"));
-        } catch (Exception ex) {
-            System.out.println("[DEBUG] Error al listar trabajadores: " + ex.getMessage());
-        }
-    }
-
-
-    // Métodos para gestionar PropertyChangeSupport
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
+        pcs.addPropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
+        pcs.removePropertyChangeListener(listener);
     }
 
-    // =============== Medico ===============
-    public void createMedico(Medico m) throws Exception {
-        Medico result = data.getMedicos().stream().filter(i -> i.getId().equals(m.getId())).findFirst().orElse(null);
-        if (result == null) {
-            data.getMedicos().add(m);
-        } else {
-            throw new Exception("Medico ya existe");
-        }
-    }
-
-    public Medico readMedico(Medico m) throws Exception {
-        Medico result = data.getMedicos().stream().filter(i -> i.getId().equals(m.getId())).findFirst().orElse(null);
-        if (result != null) {return result;}
-        else {
-            throw new Exception("Medico no existe");
-        }
-    }
-
-    /* public void deleteMedico(String id) throws Exception {
-         Medico result = data.getMedicos().stream()
-                 .filter(i -> i.getId().equals(id))
-                 .findFirst()
-                 .orElse(null);
-         if (result != null) {
-             data.getMedicos().remove(result);
-         } else {
-             throw new Exception("Medico no existe");
-         }
-     }*/
-    public void updateMedico(Medico m) throws Exception {
-        Medico result;
+    private Service() {
         try{
-            result = this.readMedico(m);
-            data.getMedicos().remove(result);
-            data.getMedicos().add(m);
-        } catch (Exception e){
-            throw new Exception("Medico no existe");
+            medicoDao = new MedicoDao();
+            farmaceutaDao = new FarmaceutaDao();
+            pacienteDao = new PacienteDao();
+            medicamentoDao = new MedicamentoDao();
+            medicamentoRecetadoDao = new MedicamentoRecetadoDao();
+            recetaDao = new RecetaDao();
         }
-
-    }
-
-    public void deleteMedico(Medico m) throws Exception {
-        data.getMedicos().remove(m);
-        propertyChangeSupport.firePropertyChange("medicos", null, data.getMedicos());
-        XmlPersister.instance().store(data);
-    }
-    public List<Medico> search(Medico m){
-        return data.getMedicos().stream()
-                .filter(i->i.getName().contains(m.getName()) || i.getId().contains(m.getId()))
-                .sorted(Comparator.comparing(Medico::getName))
-                .collect(Collectors.toList());
-    }
-
-    public List<Medico> findAll() {
-        return data.getMedicos();
-    }
-
-    // =============== Paciente ===============
-    public void createPatiente(Paciente p) throws Exception {
-        Paciente result = data.getPacientes().stream()
-                .filter(i -> i.getId().equals(p.getId()))
-                .findFirst()
-                .orElse(null);
-        if (result == null) {
-            data.getPacientes().add(p);
-        } else {
-            throw new Exception("Paciente ya existe");
+        catch(Exception e) {
+            System.exit(-1);
         }
     }
-
-    public Paciente readPaciente(Persona p) throws Exception {
-        Paciente result = data.getPacientes().stream()
-                .filter(i -> i.getId().equals(p.getId()))
-                .findFirst()
-                .orElse(null);
-        if (result != null) {
-            return result;
-        } else {
-            throw new Exception("Paciente no existe");
-        }
-    }
-
-    public void deletePaciente(Paciente p) throws Exception {
-        Paciente result = data.getPacientes().stream()
-                .filter(i -> i.getId().equals(p.getId()))
-                .findFirst()
-                .orElse(null);
-        if (result != null) {
-            data.getPacientes().remove(result);
-        } else {
-            throw new Exception("Paciente no existe");
-        }
-    }
-
-    public void updatePaciente(Paciente p) throws Exception {
-        Paciente result;
+    public void stop() {
         try {
-            result = this.readPaciente(p);
-            data.getPacientes().remove(result);
-            data.getPacientes().add(p);
+            Database.instance().close();
         } catch (Exception e) {
-            throw new Exception("Paciente no existe");
+            System.out.println(e);
         }
     }
 
-    public List<Paciente> search(Paciente p) {
-        return data.getPacientes().stream()
-                .filter(i -> i.getName().contains(p.getName()) || i.getId().contains(p.getId()))
-                .sorted(Comparator.comparing(Paciente::getName))
-                .collect(Collectors.toList());
+    // =============== MEDICO ===============
+    public Medico readMedico(String codigo) throws Exception {
+        return medicoDao.read(codigo);
+    }
+    public void createMedico(Medico m) throws Exception {
+        medicoDao.create(m);
+    }
+    public void updateMedico(Medico m) throws Exception {
+        medicoDao.update(m);
+    }
+    public void deleteMedico(Medico m)  throws Exception {
+        medicoDao.delete(m);
+    }
+    public List<Medico> readAllMedicos() {
+        Medico filtro = new Medico();
+        return medicoDao.findByNombre(filtro);
     }
 
-    public List<Paciente> findAllPacientes() {
-        return data.getPacientes();
+    // =============== FARMACEUTA ===============
+    public Farmaceuta readFarmaceuta(String codigo) throws Exception {
+        return farmaceutaDao.read(codigo);
     }
-
-    // =============== Farmaceuta ===============
     public void createFarmaceuta(Farmaceuta f) throws Exception {
-        Farmaceuta result = data.getFarmaceutas().stream()
-                .filter(i -> i.getId().equals(f.getId()))
-                .findFirst()
-                .orElse(null);
-        if (result == null) {
-            data.getFarmaceutas().add(f);
-        } else {
-            throw new Exception("Farmaceuta ya existe");
-        }
+        farmaceutaDao.create(f);
     }
-
-    public Farmaceuta readFarmaceuta(Farmaceuta f) throws Exception {
-        Farmaceuta result = data.getFarmaceutas().stream()
-                .filter(i -> i.getId().equals(f.getId()))
-                .findFirst()
-                .orElse(null);
-        if (result != null) {
-            return result;
-        } else {
-            throw new Exception("Farmaceuta no existe");
-        }
-    }
-
     public void updateFarmaceuta(Farmaceuta f) throws Exception {
-        Farmaceuta result;
-        try {
-            result = this.readFarmaceuta(f);
-            data.getFarmaceutas().remove(result);
-            data.getFarmaceutas().add(f);
-        } catch (Exception e) {
-            throw new Exception("Farmaceuta no existe");
-        }
+        farmaceutaDao.update(f);
+    }
+    public void deleteFarmaceuta(Farmaceuta f)  throws Exception {
+        farmaceutaDao.delete(f);
+    }
+    public List<Farmaceuta> readAllFarmaceutas() {
+        Farmaceuta filtro = new Farmaceuta();
+        return farmaceutaDao.findByNombre(filtro);
     }
 
-    public void deleteFarmaceuta(Farmaceuta f) throws Exception {
-        data.getFarmaceutas().remove(f);
+    // =============== PACIENTE ===============
+    public Paciente readPaciente(String codigo) throws Exception {
+        return pacienteDao.read(codigo);
+    }
+    public void createPaciente(Paciente p) throws Exception {
+        pacienteDao.create(p);
+    }
+    public void updatePaciente(Paciente p) throws Exception {
+        pacienteDao.update(p);
+    }
+    public void deletePaciente(Paciente p)  throws Exception {
+        pacienteDao.delete(p);
+    }
+    public List<Paciente> readAllPacientes() {
+        Paciente filtro = new Paciente();
+        return pacienteDao.findByNombre(filtro);
     }
 
-    public List<Farmaceuta> search(Farmaceuta f) {
-        return data.getFarmaceutas().stream()
-                .filter(i -> i.getName().contains(f.getName()) || i.getId().contains(f.getId()))
-                .sorted(Comparator.comparing(Farmaceuta::getName))
-                .collect(Collectors.toList());
+    // =============== MEDICAMENTO ===============
+    public Medicamento readMedicamento(String codigo) throws Exception {
+        return medicamentoDao.read(codigo);
     }
-
-    public List<Farmaceuta> findAllFarmaceutas() {
-        return data.getFarmaceutas();
-    }
-
-    //=================Medicamentos=====================
     public void createMedicamento(Medicamento m) throws Exception {
-        Medicamento result = data.getMedicamentos().stream()
-                .filter(i -> i.getCodigo().equals(m.getCodigo()))
-                .findFirst()
-                .orElse(null);
-        if (result == null) {
-            data.getMedicamentos().add(m);
-        } else {
-            throw new Exception("Medicamento ya existe");
-        }
+        medicamentoDao.create(m);
     }
-
-    public Medicamento readMedicamento(Medicamento m) throws Exception {
-        Medicamento result = data.getMedicamentos().stream()
-                .filter(i -> i.getCodigo().equals(m.getCodigo()))
-                .findFirst()
-                .orElse(null);
-        if (result != null) {
-            return result;
-        } else {
-            throw new Exception("Medicamento no existe");
-        }
-    }
-
     public void updateMedicamento(Medicamento m) throws Exception {
-        Medicamento result;
+        medicamentoDao.update(m);
+    }
+    public void deleteMedicamento(Medicamento m)  throws Exception {
+        medicamentoDao.delete(m);
+    }
+    public List<Medicamento> readAllMedicamentos() {
+        Medicamento filtro = new Medicamento();
+        return medicamentoDao.findByNombre(filtro);
+    }
+
+    // =============== PRESCRIPCION ===============
+    public MedicamentoRecetado readMedicamentoRecetado(String codigo) throws Exception {
+        return medicamentoRecetadoDao.read(codigo);
+    }
+    public void createMedicamentoRecetado(MedicamentoRecetado m) throws Exception {
+        medicamentoRecetadoDao.create(m);
+    }
+    public  void updateMedicamentoRecetado(MedicamentoRecetado m) throws Exception {
+        medicamentoRecetadoDao.update(m);
+    }
+    public  void deleteMedicamentoRecetado(MedicamentoRecetado m)  throws Exception {
+        medicamentoRecetadoDao.delete(m);
+    }
+    public List<MedicamentoRecetado> readAllMedicamentoRecetados() {
+        return medicamentoRecetadoDao.findAll();
+    }
+
+    // =============== RECETA ===============
+    public Receta readReceta(int codigo) throws Exception {
+        return recetaDao.read(codigo);
+    }
+
+   /* public void createReceta(Receta r) throws Exception {
+        recetaDao.create(r);
+    }
+    */
+   public void createReceta(Receta r) throws Exception {
+
+       recetaDao.create(r);
+
+       if (r.getMedicamentos() != null && !r.getMedicamentos().isEmpty()) {
+
+           for (MedicamentoRecetado mr : r.getMedicamentos()) {
+               try {
+                   mr.setPrescripcion(r.getId());
+                   medicamentoRecetadoDao.create(mr);
+               } catch (Exception e) {
+                   e.printStackTrace();
+                   throw e;
+               }
+           }
+
+       }
+   }
+
+    public void updateReceta(Receta r) throws Exception {
+        recetaDao.update(r);
+    }
+    /*
+    public void deleteReceta(Receta r)  throws Exception {
+        recetaDao.delete(r);
+    }
+
+     */
+    public void deleteReceta(Receta r) throws Exception {
+
         try {
-            result = this.readMedicamento(m);
-            data.getMedicamentos().remove(result);
-            data.getMedicamentos().add(m);
+            medicamentoRecetadoDao.deleteByReceta(r.getId());
         } catch (Exception e) {
-            throw new Exception("Medicamento no existe");
+            System.err.println("Error borrando medicamentos: " + e.getMessage());
+
         }
+
+        recetaDao.delete(r);
     }
 
-    public void deleteMedicamento(Medicamento m) throws Exception {
-        data.getMedicamentos().remove(m);
+    public List<Receta> readAllRecetas() {
+        return recetaDao.findAll();
+    }
+    public List<Receta> readByPaciente(Paciente p) {
+        return recetaDao.findAll();
     }
 
-    public List<Medicamento> search(Medicamento m) {
-        return data.getMedicamentos().stream()
-                .filter(i -> i.getNombre().contains(m.getNombre()) || i.getCodigo().contains(m.getCodigo()))
-                .sorted(Comparator.comparing(Medicamento::getNombre))
-                .collect(Collectors.toList());
-    }
-    public List<Medicamento> findAllMedicamentos() {
-        return data.getMedicamentos();
-    }
-
-    //=================Public=====================
-
-    public Trabajador read(Trabajador p) throws Exception {
-        Farmaceuta result1 = data.getFarmaceutas().stream()
-                .filter(i -> i.getId().equals(p.getId()))
-                .findFirst()
-                .orElse(null);
-
-        Medico result2 = data.getMedicos().stream()
-                .filter(i -> i.getId().equals(p.getId()))
-                .findFirst()
-                .orElse(null);
-
-        if (result1 != null) {
-            return result1;
-        } else if (result2 != null) {
-            return result2;
-        } else {
-            throw new Exception("Trabajador no existe");
-        }
-    }
-
-    // =================== Recetas ===================
-
-    // Crear receta (confeccionarla)
-    public void createReceta(Receta r) {
-        data.getRecetas().add(r);
+    // ================== TRABAJADORES ==================
+    public Trabajador readTrabajador(Trabajador t) throws Exception {
         try {
-            XmlPersister.instance().store(data);
-        }
-        catch (Exception e) {}
-
-        }
-
-    // Listar todas las recetas
-    public List<Receta> findAllRecetas() {
-        return data.getRecetas();
-    }
-
-    // Buscar recetas por paciente
-    public List<Receta> searchRecetaPorPaciente(Paciente p) {
-        return data.getRecetas().stream()
-                .filter(r -> r.getPaciente().getId().equals(p.getId()))
-                .collect(Collectors.toList());
-    }
-
-    public List<Receta> search(Receta r) {
-        return data.getRecetas().stream()
-                .filter(r1 -> r1.getPaciente() != null && r.getPaciente() != null &&
-                        r1.getPaciente().getId().equals(r.getPaciente().getId()))
-                .collect(Collectors.toList());
-    }
-
-    public Receta readReceta(Receta m) throws Exception {
-        Receta result = data.getRecetas().stream()
-                .filter(i -> i.getPaciente().getId().equals(m.getPaciente().getId()))
-                .findFirst()
-                .orElse(null);
-        if (result != null) {
-            return result;
-        } else {
-            throw new Exception("Receta no existe");
-        }
-    }
-
-    public void updateReceta(Receta m) throws Exception {
-        Receta result;
-        try {
-            result = this.readReceta(m);
-            data.getRecetas().remove(result);
-            data.getRecetas().add(m);
+            return readMedico(t.getId());
         } catch (Exception e) {
-            throw new Exception("Receta no existe");
+            return readFarmaceuta(t.getId());
         }
     }
 
-    public void saveAllDataToXML() throws Exception {
-        try {
-            XmlPersister.instance().store(data);
-        } catch (Exception e) {
-            throw new Exception("Error saving data to XML: " + e.getMessage());
-        }
-    }
-
-    public void deleteReceta(Receta p) throws Exception {
-        Receta result = data.getRecetas().stream()
-                .filter(i -> i.getPaciente().getId().equals(p.getPaciente().getId()))
-                .findFirst()
-                .orElse(null);
-        if (result != null) {
-            data.getRecetas().remove(result);
-        } else {
-            throw new Exception("Receta no existe");
-        }
-        try {
-            XmlPersister.instance().store(data);
-        } catch (Exception e) {
-            throw new Exception("Error saving data to XML: " + e.getMessage());
-        }
-    }
+    public String getPathMedicos() { return pathMedicos; }
+    public String getPathPacientes() { return pathPacientes; }
+    public String getPathFarmaceutas() { return pathFarmaceutas; }
+    public String getPathMedicamentos() { return pathMedicamentos; }
 }

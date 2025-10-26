@@ -27,14 +27,9 @@ public class Model extends AbstractModel {
     }
 
     public Model() {
-
-    }
-
-    public void init(List<Medico> list) {
-        this.list = list;
-        this.current = new Medico();
-        this.filter = new Medico();
-        this.mode = Application.MODE_CREATE;
+        list = new ArrayList<>();
+        current = new Medico();
+        filter = new Medico();
     }
 
     // GETTERS Y SETTERS

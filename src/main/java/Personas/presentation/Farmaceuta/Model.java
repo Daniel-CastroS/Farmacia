@@ -5,6 +5,7 @@ import Personas.logic.Farmaceuta;
 import Personas.presentation.AbstractModel;
 
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Model extends AbstractModel {
@@ -26,13 +27,10 @@ public class Model extends AbstractModel {
         firePropertyChange(FILTER);
     }
 
-    public Model() { }
-
-    public void init(List<Farmaceuta> list) {
-        this.list = list;
-        this.current = new Farmaceuta();
-        this.filter = new Farmaceuta();
-        this.mode = Application.MODE_CREATE;
+    public Model() {
+        list = new ArrayList<>();
+        current = new Farmaceuta();
+        filter = new Farmaceuta();
     }
 
     // GETTERS Y SETTERS

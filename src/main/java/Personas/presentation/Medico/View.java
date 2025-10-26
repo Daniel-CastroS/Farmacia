@@ -33,7 +33,7 @@ public class View implements PropertyChangeListener {
     Model model;
 
     public View() {
-
+        model = new Model();
         buscarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -90,7 +90,7 @@ public class View implements PropertyChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    PDFUtil.MedicotoPDF(model.getCurrent(), Service.instance().getData().getPathMedicamentos());
+                    PDFUtil.MedicotoPDF(model.getCurrent(), Service.instance().getPathMedicamentos());
                     JOptionPane.showMessageDialog(panel1, "Reporte generado", "Info", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -107,8 +107,6 @@ public class View implements PropertyChangeListener {
 
 
     }
-
-
 
     public JPanel getPanel() {
         return panel1;
@@ -174,7 +172,10 @@ public class View implements PropertyChangeListener {
     private Medico take() {
         Medico m = new Medico();
         m.setId(textFieldId.getText());
+        m.setGafete(textFieldId.getText());
+        m.setClave_sistema(textFieldId.getText());
         m.setName(textFieldNombre.getText());
+        m.setRol("Medico");
         m.setEspecialidad(textFieldEspecialidad.getText());
         return m;
     }

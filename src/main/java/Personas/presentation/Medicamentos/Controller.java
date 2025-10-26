@@ -1,6 +1,5 @@
 package Personas.presentation.Medicamentos;
 
-import Personas.data.XmlPersister;
 import Personas.logic.Medicamento;
 import Personas.logic.Service;
 import Personas.Application;
@@ -11,11 +10,16 @@ public class Controller {
     private Model model;
 
     public Controller(View view, Model model) {
-        model.init(Service.instance().search(new Medicamento()));
         this.view = view;
         this.model = model;
         view.setController(this);
         view.setModel(model);
+
+        try {
+            search(new Medicamento());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // ====== MÉTODOS CRUD ======
@@ -25,7 +29,7 @@ public class Controller {
         model.setFilter(filter);
         model.setMode(Application.MODE_CREATE);
         model.setCurrent(new Medicamento());
-        model.setList(Service.instance().search(model.getFilter()));
+        model.setList(Service.instance().readAllMedicamentos());
     }
 
     // Guardar medicamento (crear o actualizar)
@@ -38,8 +42,6 @@ public class Controller {
                 Service.instance().updateMedicamento(m);
                 break;
         }
-        XmlPersister.instance().store(Service.instance().getData());
-
         model.setFilter(new Medicamento());
         search(model.getFilter());
     }
@@ -49,7 +51,7 @@ public class Controller {
         Medicamento m = model.getList().get(row);
         try {
             model.setMode(Application.MODE_EDIT);
-            model.setCurrent(Service.instance().readMedicamento(m));
+            model.setCurrent(Service.instance().readMedicamento(m.getCodigo()));
         } catch (Exception ex) {
             // podrías loguear el error si quieres
         }
@@ -58,7 +60,6 @@ public class Controller {
     // Borrar medicamento
     public void deleteMedicamento() throws Exception {
         Service.instance().deleteMedicamento(model.getCurrent());
-        Service.instance().saveAllDataToXML();
         search(model.getFilter());
     }
 
@@ -68,13 +69,4 @@ public class Controller {
         model.setCurrent(new Medicamento());
     }
 
-    // Obtener listado completo
-    public List<Medicamento> getAll() {
-        return Service.instance().findAllMedicamentos();
-    }
-
-    // Refrescar la vista
-    public void shown() {
-        model.setList(Service.instance().search(new Medicamento()));
-    }
 }

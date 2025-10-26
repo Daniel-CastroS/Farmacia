@@ -10,6 +10,7 @@ import Personas.logic.Farmaceuta;
 import Personas.presentation.AbstractModel;
 
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Model extends AbstractModel {
@@ -31,24 +32,24 @@ public class Model extends AbstractModel {
 
     }
     public Model(){
+        current = new Medicamento();
+        filter = new Medicamento();
+        list = new ArrayList<>();
+    }
 
-    }
-    public void init(List<Medicamento> list) {
-        this.list = list;
-        this.current = new Medicamento();
-        this.filter = new Medicamento();
-        this.mode = Application.MODE_CREATE;
-    }
     public List<Medicamento> getList(){
         return this.list;
     }
+
     public void setList(List<Medicamento> list){
         this.list = list;
         firePropertyChange(LIST);
     }
+
     public Medicamento getCurrent(){
         return this.current;
     }
+
     public void setCurrent(Medicamento current){
         this.current = current;
         firePropertyChange(CURRENT);
@@ -66,9 +67,6 @@ public Medicamento getFilter() { return filter; }
 
     public void setMode(int mode) { this.mode = mode; }
 
-
-
-/// /
 
 
 

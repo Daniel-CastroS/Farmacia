@@ -42,7 +42,7 @@ public class Model extends AbstractModel {
 
     public void reloadRecetas() {
         try {
-            this.recetas = Service.instance().findAllRecetas();
+            this.recetas = Service.instance().readAllRecetas();
             firePropertyChange(RECETAS);
         } catch (Exception e) {
             System.err.println("Error al recargar recetas: " + e.getMessage());

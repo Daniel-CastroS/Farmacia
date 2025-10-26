@@ -49,9 +49,10 @@ public class View implements PropertyChangeListener {
 
         borrarButton.addActionListener(e -> {
             try{
-                Service.instance().deleteReceta(model.getCurrent());
+                controller.deleteReceta();
+                JOptionPane.showMessageDialog(panel1, "Receta eliminada", "Info", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Información", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 

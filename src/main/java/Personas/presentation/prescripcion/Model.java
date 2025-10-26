@@ -40,13 +40,6 @@ public class Model extends AbstractModel {
         this.mode = 0; // MODE_CREATE
     }
 
-    public void init(List<Receta> recetas) {
-        this.list = recetas;
-        this.current = new Receta();
-        this.filter = new Receta();
-        this.mode = 0; // MODE_CREATE
-    }
-
     public void initMed(List<MedicamentoRecetado> medicamentos) {
         this.listMed = medicamentos;
         firePropertyChange(LIST_MED);

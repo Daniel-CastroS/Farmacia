@@ -69,10 +69,10 @@ public class View extends JDialog implements PropertyChangeListener {
         String nueva2 = new String(passwordFieldNueva2.getPassword());
         Personas.logic.Trabajador trabajador = new Personas.logic.Trabajador();
         trabajador.setId(id);
-        if(Service.instance().read(trabajador) == null){
+        if(Service.instance().readTrabajador(trabajador) == null){
             throw new Exception("Trabajador no encontrado");
         } else {
-            trabajador = Service.instance().read(trabajador);
+            trabajador = Service.instance().readTrabajador(trabajador);
             if (!trabajador.getClave_sistema().equals(antigua)) {
                 JOptionPane.showMessageDialog(View.this, "La contraseña antigua es incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
                 resetField(passwordFieldAntigua);
@@ -93,7 +93,6 @@ public class View extends JDialog implements PropertyChangeListener {
                 throw new RuntimeException(ex);
             }
             JOptionPane.showMessageDialog(View.this, "Contraseña cambiada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            Service.instance().saveAllDataToXML();
             dispose();
         }
     }

@@ -1,59 +1,57 @@
 package Personas.data;
 
 import Personas.logic.Medico;
+import Personas.logic.Persona;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MedicoDao {
-    Database db;
+public class MedicoDao extends TrabajadorDao {
 
-    public void MedicoDao(){
-        db= Database.instance();
-    }
-    public void create(Medico p) throws Exception{
-        String sql="insert into Medico (id, name, rol, especialidad, claveSistema" +
-                "values(?,?,?,?,?)";
-        PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, p.getId());
-        stm.setString(2, p.getName());
-        stm.setString(3, p.getEspecialidad());
-        stm.setString(4, p.getRol());
-        stm.setString(5, p.getClave_sistema());
-        int count=db.executeUpdate(stm);
-        if (count==0){
-            throw new Exception("Medico ya existe");
-        }
+
+    public MedicoDao(){
+        super();
     }
 
-    public Medico read(String id) throws Exception{
-        String sql="select * from Medico p "+
-                "where p.id=?";
+
+    public void create(Medico m) throws Exception {
+        super.create(m); // Inserta en Persona + Trabajador
+        String sql = "INSERT INTO Medico (gafete, especialidad) VALUES (?, ?)";
         PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, id);
-        ResultSet rs =  db.executeQuery(stm);
-        Medico p;
+        stm.setString(1, m.getGafete());
+        stm.setString(2, m.getEspecialidad());
+        int count = db.executeUpdate(stm);
+        if (count == 0) throw new Exception("No se pudo insertar Médico");
+    }
+
+    public Medico read(String gafete) throws Exception {
+        String sql = "SELECT p.id, p.name, p.rol, t.gafete, t.claveSistema, m.especialidad " +
+                "FROM Medico m " +
+                "JOIN Trabajador t ON m.gafete = t.gafete " +
+                "JOIN Persona p ON t.id = p.id " +
+                "WHERE m.gafete = ?";
+        PreparedStatement stm = db.prepareStatement(sql);
+        stm.setString(1, gafete);
+        ResultSet rs = db.executeQuery(stm);
+
         if (rs.next()) {
-            p= from(rs,"p");
+            Medico p = from(rs); // quitar "p"
             return p;
-        }
-        else{
-            throw new Exception ("Medico no Existe");
+        } else {
+            throw new Exception("Medico no Existe");
         }
     }
 
+    /*
     public void update(Medico p) throws Exception{
-        String sql="update medico set id=?,name=?,rol=?,especialidad=?,claveSistema,"+
-                "where id=?";
-        PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, p.getName());
-        stm.setString(2, p.getId());
-        stm.setString(3, p.getRol());
-        stm.setString(4, p.getEspecialidad());
-        stm.setString(5, p.getClave_sistema());
-        int count=db.executeUpdate(stm);
+        String sqlMedico = "UPDATE Medico SET especialidad = ? WHERE gafete = ?";
+        PreparedStatement stmMedico = db.prepareStatement(sqlMedico);
+        stmMedico.setString(1, p.getEspecialidad());
+        stmMedico.setString(2, p.getGafete());
+        stmMedico.executeUpdate();
+        int count=db.executeUpdate(stmMedico);
         if (count==0){
             throw new Exception("Medico ya existe");
         }
@@ -62,10 +60,26 @@ public class MedicoDao {
         }
     }
 
+     */
+
+
+    public void update(Medico p) throws Exception{
+
+        String sqlMedico = "UPDATE Medico SET especialidad = ? WHERE gafete = ?";
+        PreparedStatement stmMedico = db.prepareStatement(sqlMedico);
+        stmMedico.setString(1, p.getEspecialidad());
+        stmMedico.setString(2, p.getGafete());
+        int count = db.executeUpdate(stmMedico);
+
+        if (count == 0){
+            throw new Exception("Medico no existe");
+        }
+    }
+
     public void delete(Medico o) throws Exception{
-        String sql="delete from Medico where id=?";
+        String sql="delete from Medico where gafete=?";
         PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, o.getId());
+        stm.setString(1, o.getGafete());
         int count=db.executeUpdate(stm);
         if (count==0){
             throw new Exception("Medico no existe");
@@ -75,31 +89,36 @@ public class MedicoDao {
     public List<Medico> findByNombre(Medico filtro){
         List<Medico> resultado = new ArrayList<Medico>();
         try {
-            String sql="select * from Medico p "+
-                    "where p.nombre like ?";
+            String sql = "SELECT p.id, p.name, p.rol, t.gafete, t.claveSistema, m.especialidad " +
+                    "FROM Medico m " +
+                    "JOIN Trabajador t ON m.gafete = t.gafete " +
+                    "JOIN Persona p ON t.id = p.id " +
+                    "WHERE p.name LIKE ?";
             PreparedStatement stm = db.prepareStatement(sql);
             stm.setString(1, "%"+filtro.getName()+"%");
             ResultSet rs =  db.executeQuery(stm);
             Medico p;
             while (rs.next()) {
-                p= from(rs,"p");
+                p= from(rs);
                 resultado.add(p);
             }
         } catch (SQLException ex) {  }
         return resultado;
     }
 
-    private Medico from(ResultSet rs, String alias){
+    private Medico from(ResultSet rs) {
+        Medico m = new Medico();
         try {
-            Medico p= new Medico();
-            p.setName(rs.getString(alias + ".name"));
-            p.setId(rs.getString(alias + ".id"));
-            p.setEspecialidad(rs.getString(alias + ".especialidad"));
-            p.setRol(rs.getString(alias + ".rol"));
-            p.setClave_sistema(rs.getString(alias + ".claveSistema"));
-            return p;
+            m.setId(rs.getString("id"));                 // de Persona
+            m.setName(rs.getString("name"));           // de Persona
+            m.setGafete(rs.getString("gafete"));         // de Trabajador
+            m.setRol(rs.getString("rol"));             // de Trabajador
+            m.setClave_sistema(rs.getString("claveSistema")); // de Trabajador
+            m.setEspecialidad(rs.getString("especialidad"));  // de Medico
+            return m;
         } catch (SQLException ex) {
-            return null;
+            ex.printStackTrace();
+            return m;
         }
     }
 }

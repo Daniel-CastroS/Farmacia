@@ -13,12 +13,17 @@ public class Controller {
     Model model;
 
     public Controller(View view, Model model) {
-        model.init(Service.instance().search(new Receta()));
         this.view = view;
         this.model = model;
-        model.init(Service.instance().findAllRecetas());
         view.setController(this);
         view.setModel(model);
+
+
+        try {
+            search(new Receta());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // ====== MÉTODOS CRUD ======
@@ -28,7 +33,7 @@ public class Controller {
         model.setFilter(filter);
         model.setMode(Personas.Application.MODE_CREATE);
         model.setCurrent(new Receta());
-        model.setList(Service.instance().search(model.getFilter()));
+        model.setList(Service.instance().readAllRecetas());
     }
 
     // Guardar (crear o actualizar)
@@ -51,7 +56,7 @@ public class Controller {
         Receta f = model.getList().get(row);
         try {
             model.setMode(Personas.Application.MODE_EDIT);
-            model.setCurrent(Service.instance().readReceta(f));
+            model.setCurrent(Service.instance().readReceta(f.getId()));
         } catch (Exception ex) {
         }
     }
@@ -69,18 +74,11 @@ public class Controller {
         model.setCurrent(new Receta());
     }
 
-    public void getAllRecetas() {
-        List<Receta> recetas = Service.instance().findAllRecetas();
-        model.setList(recetas); // This should fire the LIST property change
-    }
+    // Borrar receta
+    public void deleteReceta() throws Exception {
+        Receta r = model.getCurrent();
 
-    // Obtener listado completo
-    public List<Receta> getAll() {
-        return Service.instance().findAllRecetas();
-    }
-
-    // Mostrar datos iniciales
-    public void shown() {
-        model.setList(Service.instance().search(new Receta()));
+        Service.instance().deleteReceta(r);
+        search(model.getFilter());
     }
 }

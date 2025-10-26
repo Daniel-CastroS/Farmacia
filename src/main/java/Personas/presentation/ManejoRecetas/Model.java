@@ -28,13 +28,6 @@ public class Model extends AbstractModel {
 
     public Model() { }
 
-    public void init(List<Receta> list) {
-        this.list = list;
-        this.current = new Receta();
-        this.filter = new Receta();
-        this.mode = Application.MODE_CREATE;
-    }
-
     // GETTERS Y SETTERS
     public List<Receta> getList() { return list; }
 

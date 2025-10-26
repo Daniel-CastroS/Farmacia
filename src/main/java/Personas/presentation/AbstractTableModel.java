@@ -1,6 +1,7 @@
 package Personas.presentation;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractTableModel<E> extends javax.swing.table.AbstractTableModel implements javax.swing.table.TableModel {
@@ -9,8 +10,8 @@ public abstract class AbstractTableModel<E> extends javax.swing.table.AbstractTa
     protected String[] colNames;
 
     public AbstractTableModel(int[] cols, List<E> rows){
-        this.cols=cols;
-        this.rows=rows;
+        this.cols = cols;
+        this.rows = (rows != null) ? rows : new ArrayList<>();
         initColNames();
     }
     public int getColumnCount() {

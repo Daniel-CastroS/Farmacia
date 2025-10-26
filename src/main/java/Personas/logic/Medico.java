@@ -4,7 +4,7 @@ public class Medico extends Trabajador{
     private String especialidad;
 
     public Medico(String id, String name, String rol, String especialidad) {
-        super(id, name, rol, id);
+        super(id, name, rol, id, id);
         this.especialidad = especialidad;
     }
     public Medico() {

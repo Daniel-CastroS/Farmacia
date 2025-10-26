@@ -12,9 +12,10 @@ public class Controller {
     public Controller(Model model, View view) {
         this.model = model;
         this.view = view;
+        model.reloadRecetas();
     }
 
-    // Nuevo método para asignar el View después de la creación
+
     public void setView(View view) {
         this.view = view;
         // Forzar inicialización y actualización ahora que view está asignado
@@ -55,3 +56,4 @@ public class Controller {
         }
     }
 }
+

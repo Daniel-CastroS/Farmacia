@@ -19,7 +19,7 @@ public class Controller {
     }
 
     public void login(Trabajador t1) throws Exception {
-        Trabajador user = Service.instance().read(t1);
+        Trabajador user = Service.instance().readTrabajador(t1);
         if (!user.getClave_sistema().equals(t1.getClave_sistema())) {
             throw new Exception("Clave incorrecta");
         }

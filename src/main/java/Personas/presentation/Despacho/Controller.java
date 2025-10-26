@@ -11,12 +11,13 @@ public class Controller {
     Model model;
 
     public Controller(View view, Model model) {
-        model.init(Service.instance().search(new Receta()));
         this.view = view;
         this.model = model;
-        model.init(Service.instance().findAllRecetas());
         view.setController(this);
         view.setModel(model);
+
+
+        getAllRecetas();
     }
 
     // ====== MÉTODOS CRUD ======
@@ -26,7 +27,7 @@ public class Controller {
         model.setFilter(filter);
         model.setMode(Personas.Application.MODE_CREATE);
         model.setCurrent(new Receta());
-        model.setList(Service.instance().search(model.getFilter()));
+        model.setList(Service.instance().readAllRecetas());
     }
 
     // Guardar (crear o actualizar)
@@ -58,13 +59,22 @@ public class Controller {
         } catch (Exception ex) {
             ex.printStackTrace(); // O muestra el error si lo deseas
         }
-        Service.instance().saveAllDataToXML();
     }
-
+/*
     public void modificarReceta(Receta receta) throws Exception {
         model.modificarReceta(receta);
     }
+*/
+public void modificarReceta(Receta receta) throws Exception {
+    // 1. Guardar en la base de datos
+    Service.instance().updateReceta(receta);
 
+    // 2. Actualizar el modelo
+    model.modificarReceta(receta);
+
+    // 3. Refrescar la lista para ver los cambios
+    search(model.getFilter());
+}
     // Borrar farmaceuta
     public void deleteFarmaceuta() throws Exception {
         Service.instance().deleteReceta(model.getCurrent());
@@ -78,17 +88,7 @@ public class Controller {
     }
 
     public void getAllRecetas() {
-        List<Receta> recetas = Service.instance().findAllRecetas();
+        List<Receta> recetas = Service.instance().readAllRecetas();
         model.setList(recetas); // This should fire the LIST property change
-    }
-
-    // Obtener listado completo
-    public List<Receta> getAll() {
-        return Service.instance().findAllRecetas();
-    }
-
-    // Mostrar datos iniciales
-    public void shown() {
-        model.setList(Service.instance().search(new Receta()));
     }
 }

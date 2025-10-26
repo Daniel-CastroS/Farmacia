@@ -66,10 +66,15 @@ public class View implements PropertyChangeListener {
             public void mouseClicked(MouseEvent e) {
                 int row = table1.getSelectedRow();
                 if (row != -1) {
-                    controller.edit(row);  // Llama al método edit del controller
+                    try {
+                        controller.edit(row);  // aquí atrapamos la excepción
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         });
+
 
         // BOTÓN BORRAR
         borrarButton.addActionListener(new ActionListener() {
@@ -88,7 +93,7 @@ public class View implements PropertyChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    PDFUtil.farmaceutaToPDF(model.getCurrent(), Service.instance().getData().getPathFarmaceutas());
+                    PDFUtil.farmaceutaToPDF(model.getCurrent(), Service.instance().getPathFarmaceutas());
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panel1, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -162,9 +167,13 @@ public class View implements PropertyChangeListener {
     private Farmaceuta take() {
         Farmaceuta f = new Farmaceuta();
         f.setId(textFieldId.getText());
+        f.setGafete(textFieldId.getText());         // igual que id
+        f.setClave_sistema(textFieldId.getText());  // necesario para Trabajador
+        f.setRol("Farmaceuta");                     // obligatorio para Persona
         f.setName(textFieldNombre.getText());
         return f;
     }
+
 
     private boolean validateFields() {
         boolean valid = true;

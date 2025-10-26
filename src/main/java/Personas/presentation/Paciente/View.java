@@ -104,7 +104,7 @@ public class View implements PropertyChangeListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    PDFUtil.PacientetoPDF(model.getCurrent(), Service.instance().getData().getPathPacientes());
+                    PDFUtil.PacientetoPDF(model.getCurrent(), Service.instance().getPathPacientes());
                     JOptionPane.showMessageDialog(panelPrincipal, "Reporte generado", "Info", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(panelPrincipal, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -195,6 +195,9 @@ public class View implements PropertyChangeListener {
         p.setName(nameTextField.getText());
         p.setTelefono(telephonTextField.getText());
         p.setFechaNac(birthDatePicker.getDate());
+        p.setRol("Paciente");
+
+
         return p;
     }
 

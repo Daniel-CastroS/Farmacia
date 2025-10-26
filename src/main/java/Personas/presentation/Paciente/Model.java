@@ -22,14 +22,9 @@ public class Model extends AbstractModel{
     }
 
     public Model() {
-
-    }
-
-    public void init(List<Paciente> list) {
-        this.list = list;
-        this.current = new Paciente();
-        this.filter = new Paciente();
-        this.mode = Application.MODE_CREATE;
+        current = new Paciente();
+        list = new ArrayList<>();
+        filter = new Paciente();
     }
 
     // GETTERS Y SETTERS

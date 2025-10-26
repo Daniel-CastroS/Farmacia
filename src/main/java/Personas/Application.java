@@ -3,6 +3,7 @@ package Personas;
 import Personas.logic.Medico;
 import Personas.logic.Farmaceuta;
 import Personas.logic.Receta;
+import Personas.logic.Service;
 import Personas.presentation.Medico.Controller;
 import Personas.presentation.Medico.Model;
 import Personas.presentation.Medico.View;
@@ -10,6 +11,8 @@ import Personas.presentation.Sesion.Sesion;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 public class Application {
@@ -105,7 +108,7 @@ public class Application {
         }
 
         // Dashboard (común para todos los roles)
-        List<Receta> recetas = Personas.logic.Service.instance().findAllRecetas();
+        List<Receta> recetas = Personas.logic.Service.instance().readAllRecetas();
         Personas.presentation.Dashboard.Model dashboardModel = new Personas.presentation.Dashboard.Model(recetas);
         Personas.presentation.Dashboard.Controller dashboardController = new Personas.presentation.Dashboard.Controller(dashboardModel, null); // Controller temporal
         Personas.presentation.Dashboard.View dashboardView = new Personas.presentation.Dashboard.View(dashboardModel, dashboardController);
@@ -120,6 +123,14 @@ public class Application {
 
         // Acerca de
         tabs.addTab("Acerca de...", new ImageIcon(Application.class.getResource("/pencil.png")), new JLabel(new ImageIcon(Application.class.getResource("/hospital.jpg"))), "View Image");
+
+        window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                Service.instance().stop();
+            }
+        });
 
         window.setContentPane(tabs);
         window.setVisible(true);

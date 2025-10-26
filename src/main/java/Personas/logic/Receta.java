@@ -26,19 +26,30 @@ public class Receta {
 
     @XmlElementWrapper(name = "medicamentos")
     @XmlElement(name = "medicamentoRecetado")
-    private final List<MedicamentoRecetado> medicamentos;
+    private final List<MedicamentoRecetado> prescripciones;
 
     @XmlElement
     private String estado; // "confeccionada", "proceso", "lista", "entregada"
 
+    private int id; // Auto Increment
+
     public Receta() {
-        medicamentos = new ArrayList<>();
+        prescripciones = new ArrayList<>();
     }
 
-    public Receta(Paciente paciente) {
+    public Receta(Paciente paciente) { // Constructor para crear
         this.paciente = paciente;
-        this.medicamentos = new ArrayList<>();
+        this.prescripciones = new ArrayList<>();
         this.estado = "confeccionada"; // por defecto al crear
+    }
+
+    public Receta(Paciente paciente, LocalDate fechaConfeccion, LocalDate fechaRetiro, String estado, int id) { // Constructor para leer de BD
+        this.id = id;
+        this.paciente = paciente;
+        this.fechaConfeccion = fechaConfeccion;
+        this.fechaRetiro = fechaRetiro;
+        this.prescripciones = new ArrayList<>();
+        this.estado = estado;
     }
 
     public Paciente getPaciente() {
@@ -66,7 +77,7 @@ public class Receta {
     }
 
     public List<MedicamentoRecetado> getMedicamentos() {
-        return medicamentos;
+        return prescripciones;
     }
 
     public String getEstado() {
@@ -76,4 +87,9 @@ public class Receta {
     public void setEstado(String estado) {
         this.estado = estado;
     }
+
+    public int getId() { return id; }
+
+    public void setId(int id) { this.id = id; }
 }
+

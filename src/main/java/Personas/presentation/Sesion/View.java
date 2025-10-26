@@ -74,28 +74,71 @@ public class View extends JDialog implements PropertyChangeListener {
         model.addPropertyChangeListener(this);
     }
 
-    private void onLoggin() {
+    private void onLoggin()  {
         Trabajador trabajador = new Trabajador();
         trabajador.setId(textFieldId.getText());
-        try{
-            if(Service.instance().read(trabajador) == null){
+
+        try {
+            // Buscamos al trabajador en la base de datos
+            trabajador = Service.instance().readTrabajador(trabajador);
+
+            if(trabajador == null){
                 JOptionPane.showMessageDialog(this, "Usuario no existe");
+            } else if(trabajador.getClave_sistema().equals(textFieldClave.getText())){
+                // Si la contraseña es correcta, se hace login
+                controller.login(trabajador);
+                dispose(); // cerramos ventana de login
             } else {
-                trabajador = Service.instance().read(trabajador);
-                if(trabajador.getClave_sistema().equals(textFieldClave.getText())){
-                    // set the clave in the object we pass to the controller so controller can re-check if needed
-                    trabajador.setClave_sistema(textFieldClave.getText());
-                    controller.login(trabajador);
-                    dispose();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Clave incorrecta");
-                }
+                JOptionPane.showMessageDialog(this, "Clave incorrecta");
             }
         } catch(Exception e){
             JOptionPane.showMessageDialog(this, "Usuario no existe");
         }
     }
 
+
+
+
+    /*
+private void onLoggin() {
+    String idIngresado = textFieldId.getText().trim();
+    String claveIngresada = textFieldClave.getText().trim();
+
+    try {
+        if ("1".equals(idIngresado)) {  // ID especial para admin
+            Trabajador admin = new Trabajador();
+            admin.setId("1");
+            admin.setName("Administrador");
+            admin.setRol("admin");
+            admin.setGafete("1");
+            admin.setClave_sistema("1");
+
+            Sesion.setUserLogged(admin);
+            dispose(); // cerrar ventana de login
+        } else {
+            Trabajador trabajador = new Trabajador();
+            trabajador.setId(idIngresado);
+
+            Trabajador usuarioBD = Service.instance().readTrabajador(trabajador);
+            if (usuarioBD == null) {
+                JOptionPane.showMessageDialog(this, "Usuario no existe");
+                return;
+            }
+
+            if (usuarioBD.getClave_sistema().equals(claveIngresada)) {
+                controller.login(usuarioBD);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Clave incorrecta");
+            }
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Usuario no existe");
+    }
+}
+
+
+     */
     private void onX() {
         dispose();
     }

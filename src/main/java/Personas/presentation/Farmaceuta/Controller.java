@@ -1,6 +1,5 @@
 package Personas.presentation.Farmaceuta;
 
-import Personas.data.XmlPersister;
 import Personas.logic.Farmaceuta;
 import Personas.logic.Service;
 import Personas.Application;
@@ -11,11 +10,16 @@ public class Controller {
     Model model;
 
     public Controller(View view, Model model) {
-        model.init(Service.instance().search(new Farmaceuta()));
         this.view = view;
         this.model = model;
         view.setController(this);
         view.setModel(model);
+
+        try {
+            search(new Farmaceuta());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // ====== MÉTODOS CRUD ======
@@ -25,23 +29,25 @@ public class Controller {
         model.setFilter(filter);
         model.setMode(Personas.Application.MODE_CREATE);
         model.setCurrent(new Farmaceuta());
-        model.setList(Service.instance().search(model.getFilter()));
+        model.setList(Service.instance().readAllFarmaceutas());
     }
 
     // Guardar (crear o actualizar)
     public void save(Farmaceuta f) throws Exception {
-        switch (model.getMode()) {
-            case Personas.Application.MODE_CREATE:
+        switch(model.getMode()) {
+            case Application.MODE_CREATE:
                 Service.instance().createFarmaceuta(f);
                 break;
-            case Personas.Application.MODE_EDIT:
+            case Application.MODE_EDIT:
                 Service.instance().updateFarmaceuta(f);
                 break;
         }
-        XmlPersister.instance().store(Service.instance().getData());
 
-        model.setFilter(new Farmaceuta());
-        search(model.getFilter());
+        // REFRESCAR DESDE DB
+        List<Farmaceuta> nuevos = Service.instance().readAllFarmaceutas();
+        model.setList(nuevos);
+        model.setMode(Application.MODE_CREATE);
+        model.setCurrent(new Farmaceuta());
     }
 
     // Editar (cargar un farmaceuta desde la lista)
@@ -49,7 +55,8 @@ public class Controller {
         Farmaceuta f = model.getList().get(row);
         try {
             model.setMode(Personas.Application.MODE_EDIT);
-            model.setCurrent(Service.instance().readFarmaceuta(f));
+            //model.setCurrent(Service.instance().readFarmaceuta(f.getId()));
+            model.setCurrent(Service.instance().readFarmaceuta(f.getGafete()));
         } catch (Exception ex) {
         }
     }
@@ -57,7 +64,6 @@ public class Controller {
     // Borrar farmaceuta
     public void deleteFarmaceuta() throws Exception {
         Service.instance().deleteFarmaceuta(model.getCurrent());
-        Service.instance().saveAllDataToXML();
         search(model.getFilter());
     }
 
@@ -65,15 +71,5 @@ public class Controller {
     public void clear() {
         model.setMode(Application.MODE_CREATE);
         model.setCurrent(new Farmaceuta());
-    }
-
-    // Obtener listado completo
-    public List<Farmaceuta> getAll() {
-        return Service.instance().findAllFarmaceutas();
-    }
-
-    // Mostrar datos iniciales
-    public void shown() {
-        model.setList(Service.instance().search(new Farmaceuta()));
     }
 }

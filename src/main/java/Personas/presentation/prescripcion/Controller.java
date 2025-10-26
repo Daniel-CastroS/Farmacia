@@ -14,10 +14,6 @@ public class Controller {
     public Controller(View view, Model model) {
         this.view = view;
         this.model = model;
-
-        // Inicializamos el modelo con todas las recetas
-        model.init(Service.instance().findAllRecetas());
-
         view.setController(this);
         view.setModel(model);
     }
@@ -29,9 +25,9 @@ public class Controller {
         model.setMode(Application.MODE_CREATE);
 
         if (filter.getPaciente() != null) {
-            model.setList(Service.instance().searchRecetaPorPaciente(filter.getPaciente()));
+            model.setList(Service.instance().readByPaciente(filter.getPaciente()));
         } else {
-            model.setList(Service.instance().findAllRecetas());
+            model.setList(Service.instance().readAllRecetas());
         }
     }
     public void save(Receta r) throws Exception {
@@ -39,7 +35,6 @@ public class Controller {
         if (r.getFechaRetiro() == null) r.setFechaRetiro(LocalDate.now().plusDays(3));
         if (r.getEstado() == null) r.setEstado("Confeccionada");
 
-        // crear copia para guardar y evitar aliasing
         Receta toSave = new Receta(r.getPaciente());
         toSave.setFechaRetiro(r.getFechaRetiro());
         toSave.setEstado(r.getEstado());
@@ -53,24 +48,17 @@ public class Controller {
             );
             toSave.getMedicamentos().add(copy);
         }
-
-        // guardar en el service
         Service.instance().createReceta(toSave);
-
-        // limpiar el current para que la próxima receta empiece en blanco
         model.setCurrent(new Receta());
-
-        // refrescar listado
         model.setFilter(new Receta());
         search(model.getFilter());
-        Service.instance().saveAllDataToXML();
     }
 
 
 
     public void seleccionarPaciente() {
         // Obtener todos los pacientes desde el Service
-        List<Paciente> lista = Service.instance().findAllPacientes();
+        List<Paciente> lista = Service.instance().readAllPacientes();
 
         // Crear el mini view con la lista
         Personas.presentation.prescripcion.paciente.View mini = new Personas.presentation.prescripcion.paciente.View(lista);
@@ -97,8 +85,8 @@ public class Controller {
 
     public void delete() throws Exception {
         Receta r = model.getCurrent();
-        Service.instance().findAllRecetas().remove(r);
-        search(new Receta());
+        Service.instance().deleteReceta(r);
+
     }
 
     public void clear() {
@@ -128,11 +116,10 @@ public class Controller {
         } catch (Exception ex) {
             ex.printStackTrace(); // O muestra el error si lo deseas
         }
-        Service.instance().saveAllDataToXML();
     }
 
     public List<Receta> getAll() {
-        return Service.instance().findAllRecetas();
+        return Service.instance().readAllRecetas();
     }
 
     public Model getModel() {

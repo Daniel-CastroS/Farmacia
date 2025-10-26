@@ -19,6 +19,7 @@ public class TableModel extends AbstractTableModel<Medicamento> implements javax
 
     @Override
     protected Object getPropetyAt(Medicamento e, int col) {
+        if (e == null) return "";
         switch (cols[col]) {
             case CODIGO: return e.getCodigo();
             case NOMBRE: return e.getNombre();

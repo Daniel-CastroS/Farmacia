@@ -135,7 +135,7 @@ public class View implements PropertyChangeListener {
 
     private List<Medicamento> obtenerListaMedicamentos() {
         // Esto obtiene todos los medicamentos desde el Service
-        return Personas.logic.Service.instance().findAllMedicamentos();
+        return Personas.logic.Service.instance().readAllMedicamentos();
     }
 
 

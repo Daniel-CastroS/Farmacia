@@ -1,102 +1,88 @@
 package Personas.data;
 
 import Personas.logic.Farmaceuta;
+import Personas.logic.Trabajador;
+import Personas.logic.Persona;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FarmaceutaDao {
-    Database db;
+public class FarmaceutaDao extends TrabajadorDao {
 
-    public void FarmaceutaDao(){
-        db= Database.instance();
+    public FarmaceutaDao() {
+        super();
     }
-    public void create(Farmaceuta p) throws Exception{
-        String sql="insert into Farmaceuta (id, name, rol, claveSistema" +
-                "values(?,?,?,?)";
+
+    // Crear farmaceuta: primero Persona+Trabajador, luego Farmaceuta
+    public void create(Farmaceuta f) throws Exception {
+        super.create(f); // Inserta en Persona + Trabajador
+        String sql = "INSERT INTO Farmaceuta (gafete) VALUES (?)";
         PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, p.getId());
-        stm.setString(2, p.getName());
-        stm.setString(3, p.getRol());
-        stm.setString(4, p.getClave_sistema());
-        int count=db.executeUpdate(stm);
-        if (count==0){
-            throw new Exception("Farmaceuta ya existe");
-        }
+        stm.setString(1, f.getGafete());
+        int count = db.executeUpdate(stm);
+        if (count == 0) throw new Exception("No se pudo insertar Farmaceuta");
     }
 
-    public Farmaceuta read(String id) throws Exception{
-        String sql="select * from Farmaceuta p "+
-                "where p.id=?";
+    // Leer un farmaceuta
+    public Farmaceuta read(String gafete) throws Exception {
+        String sql = "SELECT p.id, p.name, p.rol, t.gafete, t.claveSistema " +
+                "FROM Farmaceuta f " +
+                "JOIN Trabajador t ON f.gafete = t.gafete " +
+                "JOIN Persona p ON t.id = p.id " +
+                "WHERE f.gafete = ?";
         PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, id);
-        ResultSet rs =  db.executeQuery(stm);
-        Farmaceuta p;
-        if (rs.next()) {
-            p= from(rs,"p");
-            return p;
-        }
-        else{
-            throw new Exception ("Farmaceuta no Existe");
-        }
+        stm.setString(1, gafete);
+        ResultSet rs = db.executeQuery(stm);
+
+        if (rs.next()) return from(rs);
+        else throw new Exception("Farmaceuta no existe");
     }
 
-    public void update(Farmaceuta p) throws Exception{
-        String sql="update farmaceuta set id=?,name=?,rol=?,claveSistema,"+
-                "where id=?";
+    // Update de farmaceuta
+    public void update(Farmaceuta f) throws Exception {
+        // Solo se actualizan campos de Persona y Trabajador
+        super.update(f); // update en Persona + Trabajador
+    }
+
+    // Borrar farmaceuta
+    public void delete(Farmaceuta f) throws Exception {
+        String sql = "DELETE FROM Farmaceuta WHERE gafete=?";
         PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, p.getName());
-        stm.setString(2, p.getId());
-        stm.setString(3, p.getRol());
-        stm.setString(4, p.getClave_sistema());
-        int count=db.executeUpdate(stm);
-        if (count==0){
-            throw new Exception("Farmaceuta ya existe");
-        }
-        if (count==0){
-            throw new Exception("Farmaceuta no existe");
-        }
+        stm.setString(1, f.getGafete());
+        int count = db.executeUpdate(stm);
+        if (count == 0) throw new Exception("Farmaceuta no existe");
+        super.delete(f); // borrar Trabajador + Persona
     }
 
-    public void delete(Farmaceuta o) throws Exception{
-        String sql="delete from Farmaceuta where id=?";
-        PreparedStatement stm = db.prepareStatement(sql);
-        stm.setString(1, o.getId());
-        int count=db.executeUpdate(stm);
-        if (count==0){
-            throw new Exception("Farmaceuta no existe");
-        }
-    }
-
+    // Buscar por nombre
     public List<Farmaceuta> findByNombre(Farmaceuta filtro){
-        List<Farmaceuta> resultado = new ArrayList<Farmaceuta>();
+        List<Farmaceuta> resultado = new ArrayList<>();
         try {
-            String sql="select * from Farmaceuta p "+
-                    "where p.nombre like ?";
+            String sql = "SELECT p.id, p.name, p.rol, t.gafete, t.claveSistema " +
+                    "FROM Farmaceuta f " +
+                    "JOIN Trabajador t ON f.gafete = t.gafete " +
+                    "JOIN Persona p ON t.id = p.id " +
+                    "WHERE p.name LIKE ?";
             PreparedStatement stm = db.prepareStatement(sql);
             stm.setString(1, "%"+filtro.getName()+"%");
-            ResultSet rs =  db.executeQuery(stm);
-            Farmaceuta p;
-            while (rs.next()) {
-                p= from(rs,"p");
-                resultado.add(p);
-            }
-        } catch (SQLException ex) {  }
+            ResultSet rs = db.executeQuery(stm);
+            while (rs.next()) resultado.add(from(rs));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
         return resultado;
     }
 
-    private Farmaceuta from(ResultSet rs, String alias){
-        try {
-            Farmaceuta p= new Farmaceuta();
-            p.setName(rs.getString(alias + ".name"));
-            p.setId(rs.getString(alias + ".id"));
-            p.setRol(rs.getString(alias + ".rol"));
-            p.setClave_sistema(rs.getString(alias + ".claveSistema"));
-            return p;
-        } catch (SQLException ex) {
-            return null;
-        }
+    private Farmaceuta from(ResultSet rs) throws SQLException {
+        Farmaceuta f = new Farmaceuta();
+        f.setId(rs.getString("id"));
+        f.setName(rs.getString("name"));
+        f.setRol(rs.getString("rol"));
+        f.setGafete(rs.getString("gafete"));
+        f.setClave_sistema(rs.getString("claveSistema"));
+        return f;
     }
 }
