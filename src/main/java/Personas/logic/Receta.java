@@ -11,24 +11,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Receta {
-    @XmlElement
     private Paciente paciente;
 
-    @XmlElement
-    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     private LocalDate fechaConfeccion;
 
-    @XmlElement
-    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     private LocalDate fechaRetiro;
 
-    @XmlElementWrapper(name = "medicamentos")
-    @XmlElement(name = "medicamentoRecetado")
     private final List<MedicamentoRecetado> prescripciones;
 
-    @XmlElement
     private String estado; // "confeccionada", "proceso", "lista", "entregada"
 
     private int id; // Auto Increment

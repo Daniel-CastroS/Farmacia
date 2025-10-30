@@ -6,7 +6,6 @@ import Personas.data.LocalDateAdapter;
 
 public class Paciente extends Persona{
     private String telefono;
-    @XmlJavaTypeAdapter(LocalDateAdapter.class)
     private LocalDate fechaNac;
 
     public Paciente(String id, String name, String numero, LocalDate fechaNac) {

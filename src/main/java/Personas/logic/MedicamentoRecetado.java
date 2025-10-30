@@ -4,18 +4,11 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-
 public class MedicamentoRecetado {
-    @XmlElement
     private Medicamento medicamento;
-    @XmlElement
     private int cantidad;
-    @XmlElement
     private String indicaciones;
-    @XmlElement
     private int duracionDias;
-
     private int prescripcion;// ID Auto Increment
 
     public MedicamentoRecetado(){
