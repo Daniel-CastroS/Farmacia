@@ -213,10 +213,22 @@ public class Service {
     public void updateReceta(Receta e) throws Exception {
         recetaDao.update(e);
     }
-
+/*
     public void deleteReceta(Receta e) throws Exception {
         recetaDao.delete(e);
     }
+    */
+public void deleteReceta(Receta r) throws Exception {
+
+    try {
+        medicamentoRecetadoDao.deleteByReceta(r.getId());
+    } catch (Exception e) {
+        System.err.println("Error borrando medicamentos: " + e.getMessage());
+
+    }
+
+    recetaDao.delete(r);
+}
 
     public List<Receta> searchReceta(Receta e) {
         try {
