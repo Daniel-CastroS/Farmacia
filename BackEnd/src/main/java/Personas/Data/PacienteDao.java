@@ -96,7 +96,8 @@ public class PacienteDao extends PersonaDao {
     public List<Paciente> findAll(){
         List<Paciente> ds= new ArrayList<Paciente>();
         try {
-            String sql="select * from Paciente d";
+            String sql = "SELECT p.id, p.name, p.rol, pa.telefono, pa.fechaNac " +
+                    "FROM Persona p JOIN Paciente pa ON p.id = pa.id";
             PreparedStatement stm = db.prepareStatement(sql);
             ResultSet rs =  db.executeQuery(stm);
             while (rs.next()) {
