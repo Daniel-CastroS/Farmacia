@@ -74,7 +74,7 @@ public class FarmaceutaDao extends TrabajadorDao {
         }
         return resultado;
     }
-
+/*
     public List<Farmaceuta> findAll(){
         List<Farmaceuta> ds= new ArrayList<Farmaceuta>();
         try {
@@ -87,6 +87,25 @@ public class FarmaceutaDao extends TrabajadorDao {
         } catch (SQLException ex) { }
         return ds;
     }
+
+ */
+public List<Farmaceuta> findAll(){
+    List<Farmaceuta> ds = new ArrayList<>();
+    try {
+        String sql = "SELECT p.id, p.name, p.rol, t.gafete, t.claveSistema " +
+                "FROM Farmaceuta f " +
+                "JOIN Trabajador t ON f.gafete = t.gafete " +
+                "JOIN Persona p ON t.id = p.id";
+        PreparedStatement stm = db.prepareStatement(sql);
+        ResultSet rs = db.executeQuery(stm);
+        while (rs.next()) {
+            ds.add(from(rs));
+        }
+    } catch (SQLException ex) {
+        ex.printStackTrace(); // Para ver el error si ocurre
+    }
+    return ds;
+}
 
     private Farmaceuta from(ResultSet rs) throws SQLException {
         Farmaceuta f = new Farmaceuta();

@@ -187,8 +187,23 @@ public class Service {
     }
 
     //================= RECETA   ============
-    public void createReceta(Receta e) throws Exception {
-        recetaDao.create(e);
+    public void createReceta(Receta r) throws Exception {
+
+        recetaDao.create(r);
+
+        if (r.getMedicamentos() != null && !r.getMedicamentos().isEmpty()) {
+
+            for (MedicamentoRecetado mr : r.getMedicamentos()) {
+                try {
+                    mr.setPrescripcion(r.getId());
+                    medicamentoRecetadoDao.create(mr);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw e;
+                }
+            }
+
+        }
     }
 
     public Receta readReceta(Receta e) throws Exception {
