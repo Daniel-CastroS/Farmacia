@@ -2,6 +2,8 @@ package Personas.Data;
 
 import Personas.Logic.Farmaceuta;
 import Personas.Logic.Medico;
+import Personas.Logic.Trabajador;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,13 +47,12 @@ public class MedicoDao extends TrabajadorDao {
     }
 
     public void update(Medico p) throws Exception{
-
+        super.update(p);
         String sqlMedico = "UPDATE Medico SET especialidad = ? WHERE gafete = ?";
         PreparedStatement stmMedico = db.prepareStatement(sqlMedico);
         stmMedico.setString(1, p.getEspecialidad());
         stmMedico.setString(2, p.getGafete());
         int count = db.executeUpdate(stmMedico);
-
         if (count == 0){
             throw new Exception("Medico no existe");
         }

@@ -108,4 +108,32 @@ public class Server {
             if (w!=from) w.deliver_receta(p);
         }
     }
+    public void notifyUserLogin(Worker from, String userId, String userName) {
+        System.out.println("Notificando login de: " + userName + " (" + userId + ")");
+        for (Worker w : workers) {
+            if (w != from) {
+                w.deliverUserLogin(userId, userName);
+            }
+        }
+    }
+
+    public void notifyUserLogout(Worker from, String userId) {
+        System.out.println("Notificando logout de: " + userId);
+        for (Worker w : workers) {
+            if (w != from) {
+                w.deliverUserLogout(userId);
+            }
+        }
+    }
+
+    public void notifyNewMessage(Worker from, Mensaje mensaje) {
+        System.out.println("Notificando mensaje de " + mensaje.getRemitenteNombre() +
+                " para " + mensaje.getDestinatarioNombre());
+        for (Worker w : workers) {
+            // Enviar a todos (el frontend filtrará por destinatario)
+            if (w != from) {
+                w.deliverMessage(mensaje);
+            }
+        }
+    }
 }

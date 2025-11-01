@@ -35,6 +35,20 @@ public class Protocol {
     public static final int MEDICAMENTORECETADO_DELETE=1029;
     public static final int MEDICAMENTORECETADO_SEARCH=1030;
     public static final int TRABAJADOR_READ=1031;
+
+
+
+    //
+    public static final int USER_LOGIN = 1032;
+    public static final int USER_LOGOUT = 1033;
+    public static final int USER_LIST = 1034;
+
+    //
+    public static final int MESSAGE_SEND = 1035;
+    public static final int MESSAGE_GET_PENDING = 1036;
+    public static final int MESSAGE_GET_ALL = 1037;
+
+
     public static final int ERROR_NO_ERROR=0;
     public static final int ERROR_ERROR=1;
 
@@ -48,5 +62,13 @@ public class Protocol {
     public static final int DELIVER_MEDICAMENTO=17;
     public static final int DELIVER_RECETA=18;
     public static final int DELIVER_MEDICAMENTORECETADO=19;
+
+    public static final int DELIVER_USER_LOGIN = 20;
+    public static final int DELIVER_USER_LOGOUT = 21;
+    public static final int DELIVER_USER_MESSAGE = 22;
+
+
+
+
 
 }

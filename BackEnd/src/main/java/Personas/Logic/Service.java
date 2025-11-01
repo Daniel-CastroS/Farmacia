@@ -1,9 +1,23 @@
 package Personas.Logic;
 
+import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
+
 import Personas.Data.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
+
+
+
+//
+
+
 
 public class Service {
     private static Service theInstance;
@@ -20,6 +34,11 @@ public class Service {
     private MedicamentoRecetadoDao medicamentoRecetadoDao;
     private RecetaDao recetaDao;
 
+
+
+    private MensajeDao mensajeDao;
+    private Map<String, String> activeUsers;
+
     public Service() {
         try{
             recetaDao = new RecetaDao();
@@ -28,6 +47,10 @@ public class Service {
             pacienteDao = new PacienteDao();
             farmaceutaDao = new FarmaceutaDao();
             medicoDao = new MedicoDao();
+
+
+            mensajeDao = new MensajeDao();  /////
+            activeUsers = new ConcurrentHashMap<>();///
         }
         catch(Exception e){
         }
@@ -214,8 +237,14 @@ public class Service {
         recetaDao.update(e);
     }
 
-    public void deleteReceta(Receta e) throws Exception {
-        recetaDao.delete(e);
+    public void deleteReceta(Receta r) throws Exception {
+        try{
+            medicamentoRecetadoDao.deleteByReceta(r.getId());
+        }
+        catch(Exception ex){
+            throw ex;
+        }
+        recetaDao.delete(r);
     }
 
     public List<Receta> searchReceta(Receta e) {
@@ -239,9 +268,45 @@ public class Service {
             try {
                 return farmaceutaDao.read(e.getId());
             } catch (Exception ex2) {
-                throw new Exception("Trabajador NO EXISTE");  // ✅ Lanzar excepción
+                throw new Exception("Trabajador NO EXISTE");
             }
         }
     }
+    public void addActiveUser(String userId, String userName) {
+        activeUsers.put(userId, userName);
+        System.out.println("Usuario conectado: " + userName + " (" + userId + ")");
+    }
+
+    public void removeActiveUser(String userId) {
+        String userName = activeUsers.remove(userId);
+        System.out.println("Usuario desconectado: " + userName + " (" + userId + ")");
+    }
+
+    public Map<String, String> getActiveUsers() {
+        return new HashMap<>(activeUsers);
+    }
+
+    // ////
+    public void createMensaje(Mensaje m) throws Exception {
+        mensajeDao.create(m);
+    }
+
+    public Mensaje readMensaje(int id) throws Exception {
+        return mensajeDao.read(id);
+    }
+
+    public List<Mensaje> getPendingMessages(String destinatarioId) {
+        return mensajeDao.getPendingMessages(destinatarioId);
+    }
+
+    public List<Mensaje> getAllMessages(String destinatarioId) {
+        return mensajeDao.getAllMessages(destinatarioId);
+    }
+
+    public void markMessageAsRead(int messageId) throws Exception {
+        mensajeDao.markAsRead(messageId);
+    }
+
+
 
 }

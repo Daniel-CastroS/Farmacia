@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 
 public class Worker {
     Server srv;
@@ -26,6 +27,7 @@ public class Worker {
         this.service = service;
         this.sid = sid;
     }
+
     public void setAs(Socket as, ObjectOutputStream aos, ObjectInputStream ais) {
         this.as = as;
         this.aos = aos;
@@ -64,7 +66,6 @@ public class Worker {
                             Medico p = (Medico) is.readObject();
                             service.createMedico(p);
                             os.writeInt(Protocol.ERROR_NO_ERROR);
-                            //srv.deliver_message(this,"Producto creado");
                             srv.deliver_medico(this,p);
                         } catch (Exception ex) {
                             os.writeInt(Protocol.ERROR_ERROR);
@@ -109,7 +110,6 @@ public class Worker {
                             Farmaceuta p = (Farmaceuta) is.readObject();
                             service.createFarmaceuta(p);
                             os.writeInt(Protocol.ERROR_NO_ERROR);
-                            //srv.deliver_message(this,"Producto creado");
                             srv.deliver_farmaceuta(this,p);
                         } catch (Exception ex) {
                             os.writeInt(Protocol.ERROR_ERROR);
@@ -154,7 +154,6 @@ public class Worker {
                             Paciente p = (Paciente) is.readObject();
                             service.createPaciente(p);
                             os.writeInt(Protocol.ERROR_NO_ERROR);
-                            //srv.deliver_message(this,"Producto creado");
                             srv.deliver_paciente(this,p);
                         } catch (Exception ex) {
                             os.writeInt(Protocol.ERROR_ERROR);
@@ -199,7 +198,6 @@ public class Worker {
                             Medicamento p = (Medicamento) is.readObject();
                             service.createMedicamento(p);
                             os.writeInt(Protocol.ERROR_NO_ERROR);
-                            //srv.deliver_message(this,"Producto creado");
                             srv.deliver_medicamento(this,p);
                         } catch (Exception ex) {
                             os.writeInt(Protocol.ERROR_ERROR);
@@ -244,7 +242,6 @@ public class Worker {
                             MedicamentoRecetado p = (MedicamentoRecetado) is.readObject();
                             service.createMedicamentoRecetado(p);
                             os.writeInt(Protocol.ERROR_NO_ERROR);
-                            //srv.deliver_message(this,"Producto creado");
                             srv.deliver_Medicamento_recetado(this,p);
                         } catch (Exception ex) {
                             os.writeInt(Protocol.ERROR_ERROR);
@@ -289,7 +286,6 @@ public class Worker {
                             Receta p = (Receta) is.readObject();
                             service.createReceta(p);
                             os.writeInt(Protocol.ERROR_NO_ERROR);
-                            //srv.deliver_message(this,"Producto creado");
                             srv.deliver_receta(this,p);
                         } catch (Exception ex) {
                             os.writeInt(Protocol.ERROR_ERROR);
@@ -344,6 +340,81 @@ public class Worker {
                             os.writeInt(Protocol.ERROR_ERROR);
                         }
                         break;
+
+                    // ⭐⭐⭐ NUEVO: USUARIOS ACTIVOS ⭐⭐⭐
+                    case Protocol.USER_LOGIN:
+                        try {
+                            String userId = (String) is.readObject();
+                            String userName = (String) is.readObject();
+                            service.addActiveUser(userId, userName);
+                            os.writeInt(Protocol.ERROR_NO_ERROR);
+
+                            // Notificar a todos los demás clientes
+                            srv.notifyUserLogin(this, userId, userName);
+                        } catch (Exception ex) {
+                            os.writeInt(Protocol.ERROR_ERROR);
+                        }
+                        break;
+
+                    case Protocol.USER_LOGOUT:
+                        try {
+                            String userId = (String) is.readObject();
+                            service.removeActiveUser(userId);
+                            os.writeInt(Protocol.ERROR_NO_ERROR);
+
+                            // Notificar a todos los demás clientes
+                            srv.notifyUserLogout(this, userId);
+                        } catch (Exception ex) {
+                            os.writeInt(Protocol.ERROR_ERROR);
+                        }
+                        break;
+
+                    case Protocol.USER_LIST:
+                        try {
+                            Map<String, String> users = service.getActiveUsers();
+                            os.writeInt(Protocol.ERROR_NO_ERROR);
+                            os.writeObject(users);
+                        } catch (Exception ex) {
+                            os.writeInt(Protocol.ERROR_ERROR);
+                        }
+                        break;
+
+                    //////
+                    case Protocol.MESSAGE_SEND:
+                        try {
+                            Mensaje mensaje = (Mensaje) is.readObject();
+                            service.createMensaje(mensaje);
+                            os.writeInt(Protocol.ERROR_NO_ERROR);
+
+                            // Notificar al destinatario
+                            srv.notifyNewMessage(this, mensaje);
+                        } catch (Exception ex) {
+                            os.writeInt(Protocol.ERROR_ERROR);
+                        }
+                        break;
+
+                    case Protocol.MESSAGE_GET_PENDING:
+                        try {
+                            String userId = (String) is.readObject();
+                            List<Mensaje> mensajes = service.getPendingMessages(userId);
+                            os.writeInt(Protocol.ERROR_NO_ERROR);
+                            os.writeObject(mensajes);
+                        } catch (Exception ex) {
+                            os.writeInt(Protocol.ERROR_ERROR);
+                        }
+                        break;
+
+                    case Protocol.MESSAGE_GET_ALL:
+                        try {
+                            String userId = (String) is.readObject();
+                            List<Mensaje> mensajes = service.getAllMessages(userId);
+                            os.writeInt(Protocol.ERROR_NO_ERROR);
+                            os.writeObject(mensajes);
+                        } catch (Exception ex) {
+                            os.writeInt(Protocol.ERROR_ERROR);
+                        }
+                        break;
+
                     case Protocol.DISCONNECT:
                         stop();
                         srv.remove(this);
@@ -356,6 +427,7 @@ public class Worker {
         }
     }
 
+    // //////
     public synchronized void deliver_medico(Medico p) {
         if (as != null) {
             try {
@@ -366,7 +438,7 @@ public class Worker {
             }
         }
     }
-
+/// /
     public synchronized void deliver_farmaceuta(Farmaceuta p) {
         if (as != null) {
             try {
@@ -377,7 +449,7 @@ public class Worker {
             }
         }
     }
-
+/// /
     public synchronized void deliver_paciente(Paciente p) {
         if (as != null) {
             try {
@@ -388,7 +460,7 @@ public class Worker {
             }
         }
     }
-
+///
     public synchronized void deliver_mediacamento(Medicamento p) {
         if (as != null) {
             try {
@@ -399,7 +471,7 @@ public class Worker {
             }
         }
     }
-
+/// /
     public synchronized void deliver_receta(Receta p) {
         if (as != null) {
             try {
@@ -414,7 +486,7 @@ public class Worker {
     public synchronized void deliver_medicamento_recetado(MedicamentoRecetado p) {
         if (as != null) {
             try {
-                aos.writeInt(Protocol.DELIVER_MEDICO);
+                aos.writeInt(Protocol.DELIVER_MEDICAMENTORECETADO);
                 aos.writeObject(p);
                 aos.flush();
             } catch (Exception e) {
@@ -422,4 +494,41 @@ public class Worker {
         }
     }
 
+    // ////
+    public synchronized void deliverUserLogin(String userId, String userName) {
+        if (as != null) {
+            try {
+                aos.writeInt(Protocol.DELIVER_USER_LOGIN);
+                aos.writeObject(userId);
+                aos.writeObject(userName);
+                aos.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public synchronized void deliverUserLogout(String userId) {
+        if (as != null) {
+            try {
+                aos.writeInt(Protocol.DELIVER_USER_LOGOUT);
+                aos.writeObject(userId);
+                aos.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public synchronized void deliverMessage(Mensaje mensaje) {
+        if (as != null) {
+            try {
+                aos.writeInt(Protocol.DELIVER_USER_MESSAGE);
+                aos.writeObject(mensaje);
+                aos.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

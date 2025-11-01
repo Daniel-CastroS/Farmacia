@@ -4,18 +4,27 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
+import java.util.Map;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-public class Service{
+public class Service {
     private static Service theInstance;
     public static Service instance(){
         if (theInstance == null) theInstance = new Service();
         return theInstance;
     }
+
     Socket s;
     ObjectOutputStream os;
     ObjectInputStream is;
+
+    // ⭐ NUEVO: Socket asíncrono
+    Socket as;
+    ObjectOutputStream aos;
+    ObjectInputStream ais;
+    String sid; // Session ID
+
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     String pathMedicos = "medicos.pdf";
     String pathPacientes = "pacientes.pdf";
@@ -40,19 +49,84 @@ public class Service{
             os.flush();
             is = new ObjectInputStream(s.getInputStream());
 
-            // ✅ ESTO FALTABA: Enviar SYNC al servidor
+            // ✅ Enviar SYNC al servidor
             System.out.println("CLIENTE: Enviando SYNC...");
             os.writeInt(Protocol.SYNC);
             os.flush();
 
             // ✅ Recibir el Session ID
-            String sid = (String) is.readObject();
+            sid = (String) is.readObject();
             System.out.println("CLIENTE: Session ID recibido: " + sid);
+
+            // ⭐ NUEVO: Establecer conexión asíncrona
+            setupAsyncConnection();
 
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+
+    // ⭐ NUEVO: Configurar socket asíncrono
+    private void setupAsyncConnection() {
+        try {
+            System.out.println("CLIENTE: Estableciendo conexión asíncrona...");
+            as = new Socket(Protocol.SERVER, Protocol.PORT);
+            aos = new ObjectOutputStream(as.getOutputStream());
+            aos.flush();
+            ais = new ObjectInputStream(as.getInputStream());
+
+            // Enviar ASYNC + Session ID
+            aos.writeInt(Protocol.ASYNC);
+            aos.writeObject(sid);
+            aos.flush();
+
+            System.out.println("CLIENTE: Conexión asíncrona establecida");
+
+            // Iniciar thread listener
+            startAsyncListener();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ⭐ NUEVO: Thread que escucha notificaciones asíncronas
+    private void startAsyncListener() {
+        Thread asyncThread = new Thread(() -> {
+            while (true) {
+                try {
+                    int notification = ais.readInt();
+                    System.out.println("Notificación recibida: " + notification);
+
+                    switch (notification) {
+                        case Protocol.DELIVER_USER_LOGIN:
+                            String loginUserId = (String) ais.readObject();
+                            String loginUserName = (String) ais.readObject();
+                            System.out.println("Usuario conectado: " + loginUserName);
+                            pcs.firePropertyChange("USER_LOGIN", null, loginUserId + "|" + loginUserName);
+                            break;
+
+                        case Protocol.DELIVER_USER_LOGOUT:
+                            String logoutUserId = (String) ais.readObject();
+                            System.out.println("Usuario desconectado: " + logoutUserId);
+                            pcs.firePropertyChange("USER_LOGOUT", null, logoutUserId);
+                            break;
+
+                        case Protocol.DELIVER_USER_MESSAGE:
+                            Mensaje mensaje = (Mensaje) ais.readObject();
+                            System.out.println("Mensaje recibido: " + mensaje.getContenido());
+                            pcs.firePropertyChange("NEW_MESSAGE", null, mensaje);
+                            break;
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error en listener asíncrono: " + e.getMessage());
+                    break;
+                }
+            }
+        });
+        asyncThread.setDaemon(true);
+        asyncThread.start();
     }
 
     // =============== FARMACEUTA ===============
@@ -356,10 +430,82 @@ public class Service{
             throw new RuntimeException(ex);
         }
     }
+    /// ///
+
     public List<Receta> readAllRecetas() {
         return searchReceta(new Receta());
     }
 
+    public Trabajador readTrabajador(Trabajador t) throws Exception {
+        os.writeInt(Protocol.TRABAJADOR_READ);
+        os.writeObject(t);
+        os.flush();
+        if (is.readInt() == Protocol.ERROR_NO_ERROR){
+            return (Trabajador) is.readObject();
+        } else throw new Exception("Trabajador NO EXISTE");
+    }
+
+    /////
+    public void notifyLogin(String userId, String userName) throws Exception {
+        os.writeInt(Protocol.USER_LOGIN);
+        os.writeObject(userId);
+        os.writeObject(userName);
+        os.flush();
+        if (is.readInt() != Protocol.ERROR_NO_ERROR) {
+            throw new Exception("Error al notificar login");
+        }
+    }
+
+    public void notifyLogout(String userId) throws Exception {
+        os.writeInt(Protocol.USER_LOGOUT);
+        os.writeObject(userId);
+        os.flush();
+        if (is.readInt() != Protocol.ERROR_NO_ERROR) {
+            throw new Exception("Error al notificar logout");
+        }
+    }
+
+    public Map<String, String> getActiveUsers() throws Exception {
+        os.writeInt(Protocol.USER_LIST);
+        os.flush();
+        if (is.readInt() == Protocol.ERROR_NO_ERROR) {
+            return (Map<String, String>) is.readObject();
+        } else {
+            throw new Exception("Error al obtener usuarios activos");
+        }
+    }
+
+    // ////
+    public void sendMessage(Mensaje mensaje) throws Exception {
+        os.writeInt(Protocol.MESSAGE_SEND);
+        os.writeObject(mensaje);
+        os.flush();
+        if (is.readInt() != Protocol.ERROR_NO_ERROR) {
+            throw new Exception("Error al enviar mensaje");
+        }
+    }
+
+    public List<Mensaje> getPendingMessages(String userId) throws Exception {
+        os.writeInt(Protocol.MESSAGE_GET_PENDING);
+        os.writeObject(userId);
+        os.flush();
+        if (is.readInt() == Protocol.ERROR_NO_ERROR) {
+            return (List<Mensaje>) is.readObject();
+        } else {
+            throw new Exception("Error al obtener mensajes");
+        }
+    }
+
+    public List<Mensaje> getAllMessages(String userId) throws Exception {
+        os.writeInt(Protocol.MESSAGE_GET_ALL);
+        os.writeObject(userId);
+        os.flush();
+        if (is.readInt() == Protocol.ERROR_NO_ERROR) {
+            return (List<Mensaje>) is.readObject();
+        } else {
+            throw new Exception("Error al obtener mensajes");
+        }
+    }
 
     private void disconnect() throws Exception {
         os.writeInt(Protocol.DISCONNECT);
@@ -374,17 +520,6 @@ public class Service{
         } catch (Exception e) {
             System.exit(-1);
         }
-    }
-
-    public Trabajador readTrabajador(Trabajador t) throws Exception {
-        os.writeInt(Protocol.TRABAJADOR_READ);
-        os.writeObject(t);
-        os.flush();
-        //Aca carga
-        if (is.readInt() == Protocol.ERROR_NO_ERROR){
-            //Aca se pega
-        return (Trabajador) is.readObject();
-        }else throw new Exception("Trabajador NO EXISTE");
     }
 
     public String getPathMedicos() { return pathMedicos; }

@@ -131,8 +131,30 @@ public class Application {
                 Service.instance().stop();
             }
         });
+        //
+        //
+        Personas.Presentation.UsuariosActivos.UsuariosActivosPanel usuariosPanel =
+                new Personas.Presentation.UsuariosActivos.UsuariosActivosPanel();
 
-        window.setContentPane(tabs);
+// Crear panel principal con tabs a la izquierda y usuarios a la derecha
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(tabs, BorderLayout.CENTER);
+        mainPanel.add(usuariosPanel, BorderLayout.EAST);
+
+// Notificar login al servidor
+        try {
+            Service.instance().notifyLogin(
+                    Sesion.getUserLogged().getId(),
+                    Sesion.getUserLogged().getName()
+            );
+        } catch (Exception ex) {
+            System.err.println("Error al notificar login: " + ex.getMessage());
+        }
+
+
+
+        //
+        window.setContentPane(mainPanel);
         window.setVisible(true);
     }
 
@@ -141,3 +163,4 @@ public class Application {
 
     public static final Color BACKGROUND_ERROR = new Color(255, 102, 102, 255);
 }
+

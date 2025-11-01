@@ -1,5 +1,7 @@
 package Personas.Presentation.Sesion.Contra;
 
+import Personas.Logic.Farmaceuta;
+import Personas.Logic.Medico;
 import Personas.Logic.Service;
 import Personas.Logic.Trabajador;
 import Personas.Presentation.Sesion.Controller;
@@ -73,31 +75,57 @@ public class View extends JDialog implements PropertyChangeListener {
         String nueva2 = new String(passwordFieldNueva2.getPassword());
         Trabajador trabajador = new Trabajador();
         trabajador.setId(id);
-        if (Service.instance().readTrabajador(trabajador) == null) {
+        Trabajador trabajadorBD = Service.instance().readTrabajador(trabajador);
+
+        if (trabajadorBD == null) {
             throw new Exception("Trabajador no encontrado");
-        } else {
-            trabajador = Service.instance().readTrabajador(trabajador);
-            if (!trabajador.getClave_sistema().equals(antigua)) {
-                JOptionPane.showMessageDialog(View.this, "La contraseña antigua es incorrecta", "Error", JOptionPane.ERROR_MESSAGE);
-                resetField(passwordFieldAntigua);
-                resetField(passwordFieldNueva);
-                resetField(passwordFieldNueva2);
-                return;
+        }
+
+        // Validar contraseña antigua
+        if (!trabajadorBD.getClave_sistema().equals(antigua)) {
+            JOptionPane.showMessageDialog(View.this,
+                    "La contraseña antigua es incorrecta",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            resetField(passwordFieldAntigua);
+            resetField(passwordFieldNueva);
+            resetField(passwordFieldNueva2);
+            return;
+        }
+
+        // Validar que las nuevas contraseñas coincidan
+        if (!nueva.equals(nueva2)) {
+            JOptionPane.showMessageDialog(View.this,
+                    "Las nuevas contraseñas no coinciden",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            resetField(passwordFieldNueva);
+            resetField(passwordFieldNueva2);
+            return;
+        }
+
+        // Validar que la nueva contraseña no esté vacía
+        if (nueva.isEmpty()) {
+            throw new Exception("La nueva contraseña no puede estar vacía");
+        }
+
+        // Actualizar la contraseña
+        trabajadorBD.setClave_sistema(nueva);
+
+        // Guardar en la base de datos según el tipo de trabajador
+        try {
+            // Intentar actualizar como Médico
+            if (trabajadorBD instanceof Medico) {
+                Service.instance().updateMedico((Medico) trabajadorBD);
             }
-            if (!nueva.equals(nueva2)) {
-                JOptionPane.showMessageDialog(View.this, "Las nuevas contraseñas no coinciden", "Error", JOptionPane.ERROR_MESSAGE);
-                resetField(passwordFieldAntigua);
-                resetField(passwordFieldNueva);
-                resetField(passwordFieldNueva2);
-                return;
-            }
-            try {
-                trabajador.setClave_sistema(nueva2);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
+            // Intentar actualizar como Farmaceuta
+            else if (trabajadorBD instanceof Farmaceuta) {
+                Service.instance().updateFarmaceuta((Farmaceuta) trabajadorBD);
             }
             JOptionPane.showMessageDialog(View.this, "Contraseña cambiada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             dispose();
+        } catch (Exception e) {
+
         }
     }
 
