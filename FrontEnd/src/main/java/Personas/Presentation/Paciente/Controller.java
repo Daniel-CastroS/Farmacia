@@ -30,7 +30,8 @@ public class Controller {
         model.setFilter(filter);
         model.setMode(Personas.Application.MODE_CREATE);
         model.setCurrent(new Paciente());
-        model.setList(Service.instance().readAllPaciente());
+     //   model.setList(Service.instance().readAllPaciente());
+        model.setList(Service.instance().searchPaciente(filter));
     }
 
 

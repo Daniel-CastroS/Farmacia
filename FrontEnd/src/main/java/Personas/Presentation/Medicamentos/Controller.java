@@ -28,7 +28,8 @@ public class Controller {
         model.setFilter(filter);
         model.setMode(Application.MODE_CREATE);
         model.setCurrent(new Medicamento());
-        model.setList(Service.instance().readAllMedicamento());
+       // model.setList(Service.instance().readAllMedicamento());
+        model.setList(Service.instance().searchMedicamento(filter));
     }
 
     // Guardar medicamento (crear o actualizar)

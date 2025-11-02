@@ -29,7 +29,9 @@ public class Controller {
         model.setFilter(filter);
         model.setMode(Personas.Application.MODE_CREATE);
         model.setCurrent(new Farmaceuta());
-        model.setList(Service.instance().readAllFarmaceuta());
+      //  model.setList(Service.instance().readAllFarmaceuta());
+        model.setList(Service.instance().searchFarmaceuta(filter));
+
     }
 
     // Guardar (crear o actualizar)

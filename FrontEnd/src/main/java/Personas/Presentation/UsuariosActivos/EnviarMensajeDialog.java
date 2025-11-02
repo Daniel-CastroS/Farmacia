@@ -1,8 +1,6 @@
 package Personas.Presentation.UsuariosActivos;
 
 import Personas.Logic.Mensaje;
-import Personas.Logic.Service;
-import Personas.Presentation.Sesion.Sesion;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,11 +11,13 @@ public class EnviarMensajeDialog extends JDialog {
     private JButton btnCancelar;
     private String destinatarioId;
     private String destinatarioNombre;
+    private Controller controller;
 
-    public EnviarMensajeDialog(Frame parent, String destinatarioId, String destinatarioNombre) {
+    public EnviarMensajeDialog(Frame parent, String destinatarioId, String destinatarioNombre, Controller controller) {
         super(parent, "Enviar Mensaje a " + destinatarioNombre, true);
         this.destinatarioId = destinatarioId;
         this.destinatarioNombre = destinatarioNombre;
+        this.controller = controller;
 
         initComponents();
         setSize(400, 300);
@@ -66,14 +66,8 @@ public class EnviarMensajeDialog extends JDialog {
         }
 
         try {
-            Mensaje mensaje = new Mensaje();
-            mensaje.setRemitenteId(Sesion.getUserLogged().getId());
-            mensaje.setRemitenteNombre(Sesion.getUserLogged().getName());
-            mensaje.setDestinatarioId(destinatarioId);
-            mensaje.setDestinatarioNombre(destinatarioNombre);
-            mensaje.setContenido(contenido);
 
-            Service.instance().sendMessage(mensaje);
+            controller.sendMessage(destinatarioId, destinatarioNombre, contenido);
 
             JOptionPane.showMessageDialog(this,
                     "Mensaje enviado exitosamente",

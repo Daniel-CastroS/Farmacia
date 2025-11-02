@@ -30,7 +30,8 @@ public class Controller {
         model.setFilter(filter);
         model.setMode(Application.MODE_CREATE);
         model.setCurrent(new Medico());
-        model.setList(Service.instance().readAllMedico());
+       // model.setList(Service.instance().readAllMedico());
+        model.setList(Service.instance().searchMedico(filter));
     }
 
     public void save(Medico m) throws Exception {

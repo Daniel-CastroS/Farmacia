@@ -341,7 +341,7 @@ public class Worker {
                         }
                         break;
 
-                    // ⭐⭐⭐ NUEVO: USUARIOS ACTIVOS ⭐⭐⭐
+
                     case Protocol.USER_LOGIN:
                         try {
                             String userId = (String) is.readObject();

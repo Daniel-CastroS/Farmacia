@@ -19,7 +19,7 @@ public class Service {
     ObjectOutputStream os;
     ObjectInputStream is;
 
-    // ⭐ NUEVO: Socket asíncrono
+
     Socket as;
     ObjectOutputStream aos;
     ObjectInputStream ais;
@@ -49,16 +49,16 @@ public class Service {
             os.flush();
             is = new ObjectInputStream(s.getInputStream());
 
-            // ✅ Enviar SYNC al servidor
+
             System.out.println("CLIENTE: Enviando SYNC...");
             os.writeInt(Protocol.SYNC);
             os.flush();
 
-            // ✅ Recibir el Session ID
+
             sid = (String) is.readObject();
             System.out.println("CLIENTE: Session ID recibido: " + sid);
 
-            // ⭐ NUEVO: Establecer conexión asíncrona
+
             setupAsyncConnection();
 
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public class Service {
         }
     }
 
-    // ⭐ NUEVO: Configurar socket asíncrono
+
     private void setupAsyncConnection() {
         try {
             System.out.println("CLIENTE: Estableciendo conexión asíncrona...");
@@ -91,7 +91,7 @@ public class Service {
         }
     }
 
-    // ⭐ NUEVO: Thread que escucha notificaciones asíncronas
+
     private void startAsyncListener() {
         Thread asyncThread = new Thread(() -> {
             while (true) {

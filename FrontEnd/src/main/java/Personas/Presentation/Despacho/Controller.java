@@ -27,6 +27,8 @@ public class Controller {
         model.setMode(Personas.Application.MODE_CREATE);
         model.setCurrent(new Receta());
         model.setList(Service.instance().readAllRecetas());
+       // model.setList(Service.instance().searchReceta(filter));
+
     }
 
     // Guardar (crear o actualizar)

@@ -1,8 +1,6 @@
 package Personas.Presentation.UsuariosActivos;
 
 import Personas.Logic.Mensaje;
-import Personas.Logic.Service;
-import Personas.Presentation.Sesion.Sesion;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,11 +13,12 @@ public class VerMensajesDialog extends JDialog {
     private JTextArea detailArea;
     private JButton btnRefrescar;
     private JButton btnCerrar;
-    private List<Mensaje> mensajes;
+    private Controller controller;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    public VerMensajesDialog(Frame parent) {
+    public VerMensajesDialog(Frame parent, Controller controller) {
         super(parent, "Mis Mensajes", true);
+        this.controller = controller;
         initComponents();
         setSize(600, 400);
         setLocationRelativeTo(parent);
@@ -30,13 +29,17 @@ public class VerMensajesDialog extends JDialog {
         setLayout(new BorderLayout(10, 10));
         ((JPanel)getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Panel izquierdo: lista de mensajes
+
         listModel = new DefaultListModel<>();
         messageList = new JList<>(listModel);
         messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         messageList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                mostrarDetalle();
+                int index = messageList.getSelectedIndex();
+                if (index >= 0) {
+                    controller.selectMessage(index);
+                    mostrarDetalle();
+                }
             }
         });
         JScrollPane listScroll = new JScrollPane(messageList);
@@ -50,7 +53,7 @@ public class VerMensajesDialog extends JDialog {
         detailArea.setFont(new Font("Arial", Font.PLAIN, 12));
         JScrollPane detailScroll = new JScrollPane(detailArea);
 
-        // Panel de botones
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         btnRefrescar = new JButton("Refrescar");
@@ -74,8 +77,11 @@ public class VerMensajesDialog extends JDialog {
 
     private void cargarMensajes() {
         try {
-            String userId = Sesion.getUserLogged().getId();
-            mensajes = Service.instance().getAllMessages(userId);
+
+            controller.loadMessages();
+
+            // Obtener mensajes del modelo
+            List<Mensaje> mensajes = controller.getModel().getMessages();
 
             listModel.clear();
             for (Mensaje m : mensajes) {
@@ -97,9 +103,8 @@ public class VerMensajesDialog extends JDialog {
     }
 
     private void mostrarDetalle() {
-        int index = messageList.getSelectedIndex();
-        if (index >= 0 && index < mensajes.size()) {
-            Mensaje m = mensajes.get(index);
+        Mensaje m = controller.getModel().getCurrentMessage();
+        if (m != null) {
             String detalle = String.format(
                     "De: %s (%s)\n" +
                             "Para: %s (%s)\n" +

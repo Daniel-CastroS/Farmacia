@@ -47,12 +47,12 @@ public class Application {
 
         JTabbedPane tabs = new JTabbedPane();
 
-        // comprobar rol Admin de forma robusta
+
         String role = null;
         if (Sesion.getUserLogged() != null) role = Sesion.getUserLogged().getRol();
 
 
-        // DEBUG: imprimir info del usuario logeado
+
         if (Sesion.getUserLogged() != null) {
             System.out.println("[DEBUG] Usuario logueado id='" + Sesion.getUserLogged().getId() + "' rol='" + Sesion.getUserLogged().getRol() + "' clase='" + Sesion.getUserLogged().getClass().getSimpleName() + "'");
             String r = Sesion.getUserLogged().getRol();
@@ -131,17 +131,21 @@ public class Application {
                 Service.instance().stop();
             }
         });
-        //
-        //
-        Personas.Presentation.UsuariosActivos.UsuariosActivosPanel usuariosPanel =
-                new Personas.Presentation.UsuariosActivos.UsuariosActivosPanel();
 
-// Crear panel principal con tabs a la izquierda y usuarios a la derecha
+// ========== USUARIOS
+        Personas.Presentation.UsuariosActivos.Model usuariosModel =
+                new Personas.Presentation.UsuariosActivos.Model();
+        Personas.Presentation.UsuariosActivos.View usuariosView =
+                new Personas.Presentation.UsuariosActivos.View();
+        Personas.Presentation.UsuariosActivos.Controller usuariosController =
+                new Personas.Presentation.UsuariosActivos.Controller(usuariosView, usuariosModel);
+
+
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(tabs, BorderLayout.CENTER);
-        mainPanel.add(usuariosPanel, BorderLayout.EAST);
+        mainPanel.add(usuariosView, BorderLayout.EAST);
 
-// Notificar login al servidor
+
         try {
             Service.instance().notifyLogin(
                     Sesion.getUserLogged().getId(),
@@ -151,9 +155,6 @@ public class Application {
             System.err.println("Error al notificar login: " + ex.getMessage());
         }
 
-
-
-        //
         window.setContentPane(mainPanel);
         window.setVisible(true);
     }
